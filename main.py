@@ -1,4 +1,3 @@
-import collections
 import copy
 import pprint
 
@@ -26,16 +25,6 @@ initial_state = {
     'actions': []
 }
 
-Hex = collections.namedtuple('Hex', ['type', 'neighbors'])
-
-board = [
-    Hex('wood', [1, 3]),
-    Hex('metal', [0, 2, 3, 4]),
-    Hex('oil', [1, 4]),
-    Hex('workers', [0, 1, 4]),
-    Hex('grain', [1, 2, 3]),
-    Hex('home', [3, 5]),
-]
 
 
 def main():
@@ -43,7 +32,7 @@ def main():
     player_mat = player_mats.innovative
     tree = state_tree.Tree(state)
 
-    for round in range(1):
+    for round in range(3):
         old_leaves = tree.leaves
         tree.reset_leaves()
         for leaf in old_leaves:
@@ -66,7 +55,8 @@ def main():
                     tree.insert(leaf, new_state)
 
         for node in tree.leaves:
-            pprint.pprint(node.state)
+            pprint.pprint(node.state['actions'][-2:])
+        print(len(tree.leaves))
 
 
 if __name__ == '__main__':

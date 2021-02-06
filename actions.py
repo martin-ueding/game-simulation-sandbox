@@ -1,5 +1,9 @@
+import collections
 import copy
+import itertools
 import typing
+
+import board
 
 
 def empty(state: dict) -> typing.List[dict]:
@@ -63,3 +67,75 @@ def trade(state: dict) -> typing.List[dict]:
     state_popularity['actions'].append('Buy popularity')
 
     return final_states + [state_popularity]
+
+
+def produce(state: dict) -> typing.List[dict]:
+    # Production has costs depending on the number of workers.
+    cost = {}
+    if len(state['workers']) >= 4:
+        cost['power'] = 1
+    if len(state['workers']) >= 6:
+        cost['popularity'] = 1
+    if len(state['workers']) >= 8:
+        cost['money'] = 1
+
+    # The player must be able to pay for the cost in order to perform this action.
+    for cost_type, amount in cost.items():
+        if state[cost_type] < amount:
+            return []
+
+    # The costs are deducted from the state.
+    state = copy.deepcopy(state)
+    for cost_type, amount in cost.items():
+        state[cost_type] -= amount
+
+    num_production_hexes = 3 if 'production' in state['upgrades top'] else 2
+    workers = collections.defaultdict(lambda: 0)
+    for pos in state['workers']:
+        if board.board[pos].type in ['grain', 'metal', 'oil', 'wood']:
+            workers[pos] += 1
+
+    final_states = []
+    for hex_ids in itertools.combinations(workers.keys(), num_production_hexes):
+        final_state = copy.deepcopy(state)
+        for hex_id in hex_ids:
+            hex_type = board.board[hex_id].type
+            add = workers[hex_id]
+            final_state[hex_type] += add
+        final_state['actions'].append('Produce on H{}'.format(str(hex_ids)))
+        final_states.append(final_state)
+
+    return final_states
+
+
+def move(state: dict) -> typing.List[dict]:
+    final_states = []
+
+    new_positions = []
+    labels = []
+    num_movements = 3 if 'movement' in state['upgrades top'] else 2
+    for workers in itertools.combinations(range(len(state['workers'])), num_movements):
+        neighbors = [board.board[worker].neighbors for worker in workers]
+        for new_pos in itertools.product(*neighbors):
+            positions = copy.deepcopy(state['workers'])
+            for worker, pos in zip(workers, new_pos):
+                positions[worker] = pos
+            positions.sort()
+            if not positions  in new_positions:
+                new_positions.append(positions)
+                labels.append('Move ' + ', '.join('H{} → H{}'.format(worker, pos) for worker, pos in zip(workers, new_pos)))
+
+    for new_position, label in zip(new_positions, labels):
+        new_state = copy.deepcopy(state)
+        new_state['workers'] = new_position
+        new_state['actions'].append(label)
+        final_states.append(new_state)
+
+    state_money = copy.deepcopy(state)
+    state_money['money'] += 1
+    if 'money' in state_money['upgrades top']:
+        state_money['money'] += 1
+    state_money['actions'].append('Get money')
+    final_states.append(state_money)
+
+    return final_states
