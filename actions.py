@@ -160,6 +160,7 @@ def build(state: dict) -> typing.List[dict]:
                 continue
             final_state = copy.deepcopy(state)
             final_state['buildings'][building] = hex
+            final_state['money'] += reward
             final_states.append(final_state)
 
     return final_states
