@@ -1,3 +1,4 @@
+import collections
 import copy
 import pprint
 import random
@@ -54,16 +55,40 @@ def score(state: dict) -> int:
 
 
 def beam_search_score(state: dict) -> int:
-    score = 0
+    score = state['score']
 
-    score += 5 * len(state['buildings'])**2
-    score += 5 * len(state['mechs'])**2
-    score += 5 * len(state['recruits'])**2
+    score += 5 * sum(action[1] is not None for action in state['actions'][-6:])
+
+    score += 4 * len(state['buildings'])**2
+    score += 4 * len(state['mechs'])**2
+    score += 4 * len(state['recruits'])**2
     score += 4 * len(state['upgrades top'])**2
+    score += 4 * len(state['workers'])**2
 
-    score += 100 * len(state['achievements'])
-
+    score += 5 * len(state['achievements'])
+    state['score search'] = score
     return score
+
+
+def state_filter(state: dict) -> bool:
+    if len(state['actions']) < 8:
+        return True
+
+    # I don't want to keep beams where the bottom row action hasn't been performed at least a few times in the last rounds.
+    if sum(action[1] is not None for action in state['actions'][-8:]) < 2:
+        return False
+
+    # There is no point in having resources when there is nothing to use them for.
+    if len(state['buildings']) == 4 and state['wood'] > 0:
+        return False
+    if len(state['mechs']) == 4 and state['metal'] > 0:
+        return False
+    if len(state['recruits']) == 4 and state['grain'] > 0:
+        return False
+    if len(state['upgrades top']) == 6 and state['oil'] > 0:
+        return False
+
+    return True
 
 
 def main():
@@ -72,14 +97,16 @@ def main():
     player_mat = player_mats.mats[state['player mat']]
     tree = state_tree.Tree(state)
 
-    for round in range(1, 51):
+    finished = []
+
+    for round in range(1, 101):
         print('Round', round)
-        pprint.pprint(tree.leaves[0])
 
         old_leaves = tree.leaves
         tree.reset_leaves()
         for leaf in old_leaves:
-            state = leaf.state
+            state = copy.deepcopy(leaf.state)
+            state['actions'].append([None, None])
             for column, (top_action, bottom_action) in enumerate(player_mat.actions):
                 if column == state['last column']:
                     continue
@@ -100,15 +127,40 @@ def main():
         scores = sorted(set([score(node.state) for node in tree.leaves]))
         print('Number of leaves:', len(tree.leaves))
         print('Unique scores:', scores)
-        print()
+        print('Finished beams:', len(finished))
+
+        finished_ids = [i for i, node in enumerate(tree.leaves) if len(node.state['achievements']) == 6]
+        for i in reversed(finished_ids):
+            finished.append(tree.leaves[i])
+            del tree.leaves[i]
+
+        tree.leaves = [node for node in tree.leaves if state_filter(node.state)]
+        print('Number of leaves after bottom row filter:', len(tree.leaves))
+
+        top_k = 1500
+        sampled = 500
         tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
-        tree.leaves = tree.leaves[:500] + random.sample(tree.leaves[500:], min(max(0, len(tree.leaves) - 500), 500))
+        tree.leaves = tree.leaves[:top_k] + random.sample(tree.leaves[top_k:], min(max(0, len(tree.leaves) - top_k), sampled))
         tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
 
+        if len(tree.leaves) == 0:
+            break
+
+        print('Top beam:')
+        pprint.pprint(tree.leaves[0].state)
+        print()
+
+    finished.sort(key=lambda node: score(node.state), reverse=True)
 
     print()
-    print('Top 10 beams:')
-    for node in tree.leaves[:5]:
+    print('Top beams:')
+    for node in tree.leaves[:3]:
+        print()
+        pprint.pprint(node.state)
+
+    print()
+    print('Top finished:')
+    for node in finished[:3]:
         print()
         pprint.pprint(node.state)
 

@@ -7,8 +7,16 @@ import board
 import player_mats
 
 
-def empty(state: dict) -> typing.List[dict]:
-    return []
+def increase_popularity(state: dict, amount) -> None:
+    state['popularity'] = min(18, state['popularity'] + amount)
+    if state['popularity'] == 18 and '18 popularity' not in state['achievements']:
+        state['achievements'].append('18 popularity')
+
+
+def increase_power(state: dict, amount) -> None:
+    state['power'] = min(16, state['power'] + amount)
+    if state['power'] == 16 and '16 power' not in state['achievements']:
+        state['achievements'].append('16 power')
 
 
 def bolster(state: dict) -> typing.List[dict]:
@@ -19,23 +27,30 @@ def bolster(state: dict) -> typing.List[dict]:
     state['money'] -= 1
 
     if 'monument' in state['buildings']:
-        state['popularity'] += min(18, state['popularity'] + 1)
+        increase_popularity(state, 1)
+
+    results = []
 
     # We can choose to invest into our power.
-    state_power = copy.deepcopy(state)
-    state_power['power'] += 2
-    if 'power' in state_power['upgrades top']:
-        state_power['power'] += 1
-    state_power['actions'].append('Bolster power')
+    if state['power'] < 16:
+        state_power = copy.deepcopy(state)
+        amount = 2
+        if 'power' in state_power['upgrades top']:
+            amount += 1
+        increase_power(state_power, amount)
+        state_power['actions'][-1][0] = 'Bolster power'
 
     # Alternatively we can invest into combat cards.
     state_card = copy.deepcopy(state)
     state_card['combat cards'] += 1
     if 'combat cards' in state_card['upgrades top']:
         state_card['combat cards'] += 1
-    state_card['actions'].append('Bolster combat cards')
+    state_card['actions'][-1][0] = 'Bolster combat cards'
+    # In this simulation, combat cards have no point. We only want to perform this action when we get some popularity out of it.
+    if 'monument' in state['buildings'] and state['popularity'] < 18:
+        results.append(state_card)
 
-    return [state_power, state_card]
+    return results
 
 
 def trade(state: dict) -> typing.List[dict]:
@@ -46,7 +61,7 @@ def trade(state: dict) -> typing.List[dict]:
     state['money'] -= 1
 
     if 'armory' in state['buildings']:
-        state['power'] += min(16, state['power'] + 1)
+        increase_power(state, 1)
 
     final_states = []
 
@@ -57,15 +72,16 @@ def trade(state: dict) -> typing.List[dict]:
             state_resource = copy.deepcopy(state)
             state_resource[res_1] += 1
             state_resource[res_2] += 1
-            state_resource['actions'].append('Buy {} and {}'.format(res_1, res_2))
+            state_resource['actions'][-1][0] = 'Buy {} and {}'.format(res_1, res_2)
             final_states.append(state_resource)
 
     # Alternatively we can invest into our popularity
     state_popularity = copy.deepcopy(state)
-    state_popularity['popularity'] += 1
+    amount = 1
     if 'popularity' in state_popularity['upgrades top']:
-        state_popularity['popularity'] += 1
-    state_popularity['actions'].append('Buy popularity')
+        amount += 1
+    increase_popularity(state_popularity,  amount)
+    state_popularity['actions'][-1][0] = 'Buy popularity'
 
     return final_states + [state_popularity]
 
@@ -115,7 +131,7 @@ def produce(state: dict) -> typing.List[dict]:
             add = workers[hex_id]
             final_state[hex_type] += add
             strings.append('{} {} on H{}'.format(add, hex_type, hex_id))
-        final_state['actions'].append('Produce {}'.format(' and '.join(strings)))
+        final_state['actions'][-1][0] = 'Produce {}'.format(' and '.join(strings))
         final_states.append(final_state)
 
     return final_states
@@ -136,19 +152,19 @@ def move(state: dict) -> typing.List[dict]:
             positions.sort()
             if not positions  in new_positions:
                 new_positions.append(positions)
-                labels.append('Move ' + ', '.join('H{} → H{}'.format(worker, pos) for worker, pos in zip(workers, new_pos)))
+                labels.append('Move ' + ', '.join('H{} ({}) → H{} ({})'.format(worker, board.board[worker].type, pos, board.board[pos].type) for worker, pos in zip(workers, new_pos)))
 
     for new_position, label in zip(new_positions, labels):
         new_state = copy.deepcopy(state)
         new_state['workers'] = new_position
-        new_state['actions'].append(label)
+        new_state['actions'][-1][0] = label
         final_states.append(new_state)
 
     state_money = copy.deepcopy(state)
     state_money['money'] += 1
     if 'money' in state_money['upgrades top']:
         state_money['money'] += 1
-    state_money['actions'].append('Get money')
+    state_money['actions'][-1][0] = 'Get money'
     final_states.append(state_money)
 
     return final_states
@@ -180,7 +196,7 @@ def build(state: dict) -> typing.List[dict]:
                 final_state['popularity'] += 1
             if len(final_state['buildings']) == 4:
                 final_state['achievements'].append('all buildings')
-            final_state['actions'].append('Build {} on H{}'.format(building, hex))
+            final_state['actions'][-1][1] = 'Build {} on H{}'.format(building, hex)
             final_states.append(final_state)
 
     return final_states
@@ -206,7 +222,7 @@ def deploy(state: dict) -> typing.List[dict]:
             final_state['money'] += 1
         if len(final_state['mechs']) == 4:
             final_state['achievements'].append('all mechs')
-        final_state['actions'].append('Deploy mech at H{}'.format(hex))
+        final_state['actions'][-1][1] = 'Deploy mech at H{}'.format(hex)
         final_states.append(final_state)
 
     return final_states
@@ -230,9 +246,9 @@ def enlist(state: dict) -> typing.List[dict]:
             final_state['grain'] -= cost
             final_state['recruits'][recruit] = bonus
             if bonus == 'popularity':
-                final_state['popularity'] = min(18, final_state['popularity'] + 2)
+                increase_popularity(final_state, 2)
             elif bonus == 'power':
-                final_state['power'] = min(16, final_state['power'] + 2)
+                increase_power(final_state, 2)
             else:
                 final_state[bonus] += 2
             final_state['money'] += reward
@@ -240,7 +256,7 @@ def enlist(state: dict) -> typing.List[dict]:
                 final_state['combat cards'] += 1
             if len(final_state['recruits']) == 4:
                 final_state['achievements'].append('all recruits')
-            final_state['actions'].append('Enlist {} for {}'.format(recruit, bonus))
+            final_state['actions'][-1][1] = 'Enlist {} for {}'.format(recruit, bonus)
             final_states.append(final_state)
 
     return final_states
@@ -272,7 +288,7 @@ def upgrade(state: dict) -> typing.List[dict]:
                 final_state['power'] += 1
             if len(final_state['upgrades top']) == 6:
                 final_state['achievements'].append('all upgrades')
-            final_state['actions'].append('Upgrade {} and {}'.format(upgrade_top, upgrade_bottom))
+            final_state['actions'][-1][1] = 'Upgrade {} and {}'.format(upgrade_top, upgrade_bottom)
             final_states.append(final_state)
 
     return final_states
