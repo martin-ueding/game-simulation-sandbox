@@ -7,10 +7,10 @@ Costs = collections.namedtuple('Costs', ['fixed', 'variable', 'reward'])
 
 mats = {'innovative': PlayerMat(
         actions=[
-            (actions.trade, actions.empty),
-            (actions.produce, actions.empty),
+            (actions.trade, actions.upgrade),
+            (actions.produce, actions.deploy),
             (actions.bolster, actions.build),
-            (actions.move, actions.empty),
+            (actions.move, actions.enlist),
         ],
         upgrade=(3, 0, 3),
         deploy=(2, 1, 1),

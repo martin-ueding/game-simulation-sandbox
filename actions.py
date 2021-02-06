@@ -19,7 +19,7 @@ def bolster(state: dict) -> typing.List[dict]:
     state['money'] -= 1
 
     if 'monument' in state['buildings']:
-        state['popularity'] += 1
+        state['popularity'] += min(18, state['popularity'] + 1)
 
     # We can choose to invest into our power.
     state_power = copy.deepcopy(state)
@@ -46,7 +46,7 @@ def trade(state: dict) -> typing.List[dict]:
     state['money'] -= 1
 
     if 'armory' in state['buildings']:
-        state['power'] += 1
+        state['power'] += min(16, state['power'] + 1)
 
     final_states = []
 
@@ -90,6 +90,16 @@ def produce(state: dict) -> typing.List[dict]:
     for cost_type, amount in cost.items():
         state[cost_type] -= amount
 
+    # The mill will create one unit of resources.
+    if 'mill' in state['buildings']:
+        mill_type = board.board[state['buildings']['mill']].type
+        # If the mill is build in a village, it produces one more worker in that hex.
+        if mill_type == 'worker' and len(state['worker']) < 8:
+            state['worker'].append(state['buildings']['mill'])
+        # Otherwise it just produces one of the resources.
+        else:
+            state[mill_type] += 1
+
     num_production_hexes = 3 if 'production' in state['upgrades top'] else 2
     workers = collections.defaultdict(lambda: 0)
     for pos in state['workers']:
@@ -99,11 +109,13 @@ def produce(state: dict) -> typing.List[dict]:
     final_states = []
     for hex_ids in itertools.combinations(workers.keys(), num_production_hexes):
         final_state = copy.deepcopy(state)
+        strings = []
         for hex_id in hex_ids:
             hex_type = board.board[hex_id].type
             add = workers[hex_id]
             final_state[hex_type] += add
-        final_state['actions'].append('Produce on H{}'.format(str(hex_ids)))
+            strings.append('{} {} on H{}'.format(add, hex_type, hex_id))
+        final_state['actions'].append('Produce {}'.format(' and '.join(strings)))
         final_states.append(final_state)
 
     return final_states
@@ -148,7 +160,7 @@ def build(state: dict) -> typing.List[dict]:
     if cost > state['wood']:
         return []
 
-    buildings_left = set(['armory', 'monument', 'tunnel', 'mill']) - set(state['buildings'].keys())
+    buildings_left = {'armory', 'monument', 'tunnel', 'mill'} - set(state['buildings'].keys())
     if len(buildings_left) == 0:
         return []
 
@@ -158,9 +170,109 @@ def build(state: dict) -> typing.List[dict]:
             # If there already is a building on that hex, we can't build.
             if hex in state['buildings'].values():
                 continue
+            if building == 'mill' and board.board[hex].type not in ['grain', 'metal', 'oil', 'wood', 'worker']:
+                continue
             final_state = copy.deepcopy(state)
+            final_state['wood'] -= cost
             final_state['buildings'][building] = hex
             final_state['money'] += reward
+            if 'build' in final_state['recruits'].keys() and final_state['popularity'] <= 18:
+                final_state['popularity'] += 1
+            if len(final_state['buildings']) == 4:
+                final_state['achievements'].append('all buildings')
+            final_state['actions'].append('Build {} on H{}'.format(building, hex))
+            final_states.append(final_state)
+
+    return final_states
+
+
+def deploy(state: dict) -> typing.List[dict]:
+    fixed_costs, variable_cost, reward = player_mats.mats[state['player mat']].build
+    cost = fixed_costs + variable_cost - state['upgrades bottom']['deploy']
+    if cost > state['metal']:
+        return []
+
+    # If we already have all the mechs, there is nothing we can deploy.
+    if len(state['mechs']) == 4:
+        return []
+
+    final_states = []
+    for hex in set(state['workers']):
+        final_state = copy.deepcopy(state)
+        final_state['metal'] -= cost
+        final_state['mechs'].append(hex)
+        final_state['money'] += reward
+        if 'deploy' in final_state['recruits'].keys():
+            final_state['money'] += 1
+        if len(final_state['mechs']) == 4:
+            final_state['achievements'].append('all mechs')
+        final_state['actions'].append('Deploy mech at H{}'.format(hex))
+        final_states.append(final_state)
+
+    return final_states
+
+
+def enlist(state: dict) -> typing.List[dict]:
+    fixed_costs, variable_cost, reward = player_mats.mats[state['player mat']].enlist
+    cost = fixed_costs + variable_cost - state['upgrades bottom']['enlist']
+    if cost > state['grain']:
+        return []
+
+    recruits_left = {'upgrade', 'deploy', 'build', 'enlist'} - set(state['recruits'].keys())
+    bonuses_left = {'money', 'power', 'popularity', 'combat cards'} - set(state['recruits'].values())
+    if len(recruits_left) == 0:
+        return []
+
+    final_states = []
+    for recruit in recruits_left:
+        for bonus in bonuses_left:
+            final_state = copy.deepcopy(state)
+            final_state['grain'] -= cost
+            final_state['recruits'][recruit] = bonus
+            if bonus == 'popularity':
+                final_state['popularity'] = min(18, final_state['popularity'] + 2)
+            elif bonus == 'power':
+                final_state['power'] = min(16, final_state['power'] + 2)
+            else:
+                final_state[bonus] += 2
+            final_state['money'] += reward
+            if 'enlist' in state['recruits'].keys():
+                final_state['combat cards'] += 1
+            if len(final_state['recruits']) == 4:
+                final_state['achievements'].append('all recruits')
+            final_state['actions'].append('Enlist {} for {}'.format(recruit, bonus))
+            final_states.append(final_state)
+
+    return final_states
+
+
+def upgrade(state: dict) -> typing.List[dict]:
+    fixed_costs, variable_cost, reward = player_mats.mats[state['player mat']].upgrade
+    cost = fixed_costs + variable_cost - state['upgrades bottom']['upgrade']
+    if cost > state['oil']:
+        return []
+
+    upgrades_top_left = {'power', 'combat cards', 'popularity', 'production', 'movement', 'money'} - set(state['upgrades top'])
+    if len(upgrades_top_left) == 0:
+        return []
+    upgrades_bottom_left = []
+    for upgrade_bottom_type in {'upgrade', 'deploy', 'build', 'enlist'}:
+        if state['upgrades bottom'][upgrade_bottom_type] < getattr(player_mats.mats[state['player mat']], upgrade_bottom_type)[2]:
+            upgrades_bottom_left.append(upgrade_bottom_type)
+
+    final_states = []
+    for upgrade_top in upgrades_top_left:
+        for upgrade_bottom in upgrades_bottom_left:
+            final_state = copy.deepcopy(state)
+            final_state['oil'] -= cost
+            final_state['upgrades top'].append(upgrade_top)
+            final_state['upgrades bottom'][upgrade_bottom] += 1
+            final_state['money'] += reward
+            if 'upgrade' in state['recruits'].keys() and final_state['power'] < 16:
+                final_state['power'] += 1
+            if len(final_state['upgrades top']) == 6:
+                final_state['achievements'].append('all upgrades')
+            final_state['actions'].append('Upgrade {} and {}'.format(upgrade_top, upgrade_bottom))
             final_states.append(final_state)
 
     return final_states

@@ -1,5 +1,6 @@
 import copy
 import pprint
+import random
 
 import player_mats
 import state_tree
@@ -22,11 +23,12 @@ initial_state = {
     'upgrades bottom': {'build': 0, 'deploy': 0, 'enlist': 0, 'upgrade': 0},
     'achievements': [],
     'last column': -1,
-    'actions': []
+    'actions': [],
+    'recruits': {},
 }
 
 
-def score(state):
+def score(state: dict) -> int:
     score = 0
 
     num_achievements = len(state['achievements'])
@@ -47,6 +49,19 @@ def score(state):
         score += 3 * num_resource_pairs
 
     score += state['money']
+    state['score'] = score
+    return score
+
+
+def beam_search_score(state: dict) -> int:
+    score = 0
+
+    score += 5 * len(state['buildings'])**2
+    score += 5 * len(state['mechs'])**2
+    score += 5 * len(state['recruits'])**2
+    score += 4 * len(state['upgrades top'])**2
+
+    score += 100 * len(state['achievements'])
 
     return score
 
@@ -57,7 +72,8 @@ def main():
     player_mat = player_mats.mats[state['player mat']]
     tree = state_tree.Tree(state)
 
-    for round in range(5):
+    for round in range(1, 51):
+        print('Round', round)
         pprint.pprint(tree.leaves[0])
 
         old_leaves = tree.leaves
@@ -85,9 +101,16 @@ def main():
         print('Number of leaves:', len(tree.leaves))
         print('Unique scores:', scores)
         print()
-        tree.leaves.sort(key=lambda node: score(node.state), reverse=True)
+        tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
+        tree.leaves = tree.leaves[:500] + random.sample(tree.leaves[500:], min(max(0, len(tree.leaves) - 500), 500))
+        tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
 
-        tree.leaves = tree.leaves[:100]
+
+    print()
+    print('Top 10 beams:')
+    for node in tree.leaves[:5]:
+        print()
+        pprint.pprint(node.state)
 
 
 if __name__ == '__main__':
