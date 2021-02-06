@@ -4,6 +4,7 @@ import itertools
 import typing
 
 import board
+import player_mats
 
 
 def empty(state: dict) -> typing.List[dict]:
@@ -137,5 +138,28 @@ def move(state: dict) -> typing.List[dict]:
         state_money['money'] += 1
     state_money['actions'].append('Get money')
     final_states.append(state_money)
+
+    return final_states
+
+
+def build(state: dict) -> typing.List[dict]:
+    fixed_costs, variable_cost, reward = player_mats.mats[state['player mat']].build
+    cost = fixed_costs + variable_cost - state['upgrades bottom']['build']
+    if cost > state['wood']:
+        return []
+
+    buildings_left = set(['armory', 'monument', 'tunnel', 'mill']) - set(state['buildings'].keys())
+    if len(buildings_left) == 0:
+        return []
+
+    final_states = []
+    for building in buildings_left:
+        for hex in set(state['workers']):
+            # If there already is a building on that hex, we can't build.
+            if hex in state['buildings'].values():
+                continue
+            final_state = copy.deepcopy(state)
+            final_state['buildings'][building] = hex
+            final_states.append(final_state)
 
     return final_states
