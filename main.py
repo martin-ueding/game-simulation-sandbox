@@ -79,13 +79,13 @@ def state_filter(state: dict) -> bool:
         return False
 
     # There is no point in having resources when there is nothing to use them for.
-    if len(state['buildings']) == 4 and state['wood'] > 0:
+    if len(state['buildings']) == 4 and state['wood'] > 1:
         return False
-    if len(state['mechs']) == 4 and state['metal'] > 0:
+    if len(state['mechs']) == 4 and state['metal'] > 1:
         return False
-    if len(state['recruits']) == 4 and state['grain'] > 0:
+    if len(state['recruits']) == 4 and state['grain'] > 1:
         return False
-    if len(state['upgrades top']) == 6 and state['oil'] > 0:
+    if len(state['upgrades top']) == 6 and state['oil'] > 1:
         return False
 
     return True
@@ -97,10 +97,27 @@ def main():
     player_mat = player_mats.mats[state['player mat']]
     tree = state_tree.Tree(state)
 
+
     finished = []
 
-    for round in range(1, 101):
+    for round in range(1, 26):
         print('Round', round)
+
+        scores = sorted(set([score(node.state) for node in tree.leaves]))
+        tree.leaves = [node for node in tree.leaves if state_filter(node.state)]
+        print('Number of leaves filtered filter:', len(tree.leaves))
+
+        top_k = 1500
+        sampled = 500
+        tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
+        tree.leaves = tree.leaves[:top_k] + random.sample(tree.leaves[top_k:], min(max(0, len(tree.leaves) - top_k), sampled))
+        tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
+
+        if len(tree.leaves) == 0:
+            break
+
+        print('Top beam:')
+        pprint.pprint(tree.leaves[0].state)
 
         old_leaves = tree.leaves
         tree.reset_leaves()
@@ -126,41 +143,28 @@ def main():
 
         scores = sorted(set([score(node.state) for node in tree.leaves]))
         print('Number of leaves:', len(tree.leaves))
+        print('Increase in leaves: {:.1f}'.format(len(tree.leaves) / len(old_leaves)))
         print('Unique scores:', scores)
         print('Finished beams:', len(finished))
+        print()
 
         finished_ids = [i for i, node in enumerate(tree.leaves) if len(node.state['achievements']) == 6]
         for i in reversed(finished_ids):
             finished.append(tree.leaves[i])
             del tree.leaves[i]
 
-        tree.leaves = [node for node in tree.leaves if state_filter(node.state)]
-        print('Number of leaves after bottom row filter:', len(tree.leaves))
-
-        top_k = 1500
-        sampled = 500
-        tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
-        tree.leaves = tree.leaves[:top_k] + random.sample(tree.leaves[top_k:], min(max(0, len(tree.leaves) - top_k), sampled))
-        tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
-
-        if len(tree.leaves) == 0:
-            break
-
-        print('Top beam:')
-        pprint.pprint(tree.leaves[0].state)
-        print()
-
     finished.sort(key=lambda node: score(node.state), reverse=True)
+    tree.leaves.sort(key=lambda node: score(node.state), reverse=True)
 
     print()
     print('Top beams:')
-    for node in tree.leaves[:3]:
+    for node in tree.leaves[:5]:
         print()
         pprint.pprint(node.state)
 
     print()
     print('Top finished:')
-    for node in finished[:3]:
+    for node in finished[:5]:
         print()
         pprint.pprint(node.state)
 

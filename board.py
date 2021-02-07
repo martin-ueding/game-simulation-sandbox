@@ -8,5 +8,5 @@ board = [
     Hex('oil', [1, 4]),
     Hex('workers', [0, 1, 4]),
     Hex('grain', [1, 2, 3]),
-    Hex('home', [3, 5]),
+    Hex('home', [2, 4]),
 ]

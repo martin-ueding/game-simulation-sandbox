@@ -1,6 +1,8 @@
 import collections
 import copy
 import itertools
+import pprint
+import sys
 import typing
 
 import board
@@ -137,28 +139,67 @@ def produce(state: dict) -> typing.List[dict]:
     return final_states
 
 
+def move_helper(state, movers):
+    if len(movers) == 0:
+        return [copy.deepcopy(state)]
+
+    result = []
+    mover_type, mover_id = movers[0]
+    if mover_type == 'worker':
+        pos_old = state['workers'][mover_id]
+        neighbors = board.board[pos_old].neighbors
+        for neighbor in neighbors:
+            new_state = copy.deepcopy(state)
+            new_state['workers'][mover_id] = neighbor
+            new_state['actions'][-1][0] += ', worker from {} to {}'.format(pos_old, neighbor)
+            result += move_helper(new_state, movers[1:])
+    elif mover_type == 'hero':
+        pos_old = state['hero']
+        neighbors = board.board[pos_old].neighbors
+        for neighbor in neighbors:
+            new_state = copy.deepcopy(state)
+            new_state['hero'] = neighbor
+            new_state['actions'][-1][0] += ', hero from {} to {}'.format(pos_old, neighbor)
+            result += move_helper(new_state, movers[1:])
+    elif mover_type == 'mech':
+        pos_old = state['mechs'][mover_id]
+        neighbors = board.board[pos_old].neighbors
+        for neighbor in neighbors:
+            present_workers = [worker_id for worker_id, worker in enumerate(state['workers']) if worker == pos_old]
+            for num_take_workers in range(len(present_workers) + 1):
+                new_state = copy.deepcopy(state)
+                new_state['mechs'][mover_id] = neighbor
+                for worker_id in present_workers[:num_take_workers]:
+                    new_state['workers'][worker_id] = neighbor
+                new_state['actions'][-1][0] += ', mech from {} to {} with {} workers'.format(pos_old, neighbor, num_take_workers)
+                result += move_helper(new_state, movers[1:])
+    return result
+
+
 def move(state: dict) -> typing.List[dict]:
+    num_movements_possible = 3 if 'movement' in state['upgrades top'] else 2
+
+    state_move = copy.deepcopy(state)
+    state_move['actions'][-1][0] = 'Move'
+
+    new_states = []
+    movables = [('mech', i) for i in range(len(state_move['mechs']))] + [('worker', i) for i in range(len(state_move['workers']))] + [('hero', 0)]
+    for num_movements in range(1, num_movements_possible + 1):
+        for mover_set in itertools.combinations(movables, num_movements):
+            for movers in itertools.permutations(mover_set):
+                new_states += move_helper(state_move, movers)
+
+    for i in range(len(new_states)):
+        new_states[i]['mechs'].sort()
+        new_states[i]['workers'].sort()
+
     final_states = []
-
-    new_positions = []
-    labels = []
-    num_movements = 3 if 'movement' in state['upgrades top'] else 2
-    for workers in itertools.combinations(range(len(state['workers'])), num_movements):
-        neighbors = [board.board[worker].neighbors for worker in workers]
-        for new_pos in itertools.product(*neighbors):
-            positions = copy.deepcopy(state['workers'])
-            for worker, pos in zip(workers, new_pos):
-                positions[worker] = pos
-            positions.sort()
-            if not positions  in new_positions:
-                new_positions.append(positions)
-                labels.append('Move ' + ', '.join('H{} ({}) → H{} ({})'.format(worker, board.board[worker].type, pos, board.board[pos].type) for worker, pos in zip(workers, new_pos)))
-
-    for new_position, label in zip(new_positions, labels):
-        new_state = copy.deepcopy(state)
-        new_state['workers'] = new_position
-        new_state['actions'][-1][0] = label
-        final_states.append(new_state)
+    for new_state in new_states:
+        for final_state in final_states:
+            if new_state['hero'] == final_state['hero'] and  new_state['mechs'] == final_state['mechs'] and new_state['workers'] == final_state['workers']:
+                break
+        else:
+            final_states.append(new_state)
 
     state_money = copy.deepcopy(state)
     state_money['money'] += 1
