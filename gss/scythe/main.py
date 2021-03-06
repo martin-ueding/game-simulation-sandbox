@@ -1,11 +1,10 @@
-import collections
 import copy
 import pprint
-import random
 
-import player_mats
-import state_tree
+import tqdm
 
+from gss.scythe import player_mats
+from gss import state_tree
 
 initial_state = {
     'popularity': 3,
@@ -55,17 +54,9 @@ def score(state: dict) -> int:
 
 
 def beam_search_score(state: dict) -> int:
-    score = state['score']
-
-    score += 5 * sum(action[1] is not None for action in state['actions'][-6:])
-
-    score += 4 * len(state['buildings'])**2
-    score += 4 * len(state['mechs'])**2
-    score += 4 * len(state['recruits'])**2
-    score += 4 * len(state['upgrades top'])**2
-    score += 4 * len(state['workers'])**2
-
-    score += 5 * len(state['achievements'])
+    score = 0
+    score += state['score']
+    score += 10 * len(state['workers'])**2
     state['score search'] = score
     return score
 
@@ -100,18 +91,16 @@ def main():
 
     finished = []
 
-    for round in range(1, 26):
+    for round in range(1, 21):
         print('Round', round)
 
         scores = sorted(set([score(node.state) for node in tree.leaves]))
         tree.leaves = [node for node in tree.leaves if state_filter(node.state)]
         print('Number of leaves filtered filter:', len(tree.leaves))
 
-        top_k = 1500
-        sampled = 500
+        top_k = 500
         tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
-        tree.leaves = tree.leaves[:top_k] + random.sample(tree.leaves[top_k:], min(max(0, len(tree.leaves) - top_k), sampled))
-        tree.leaves.sort(key=lambda node: beam_search_score(node.state), reverse=True)
+        tree.leaves = tree.leaves[:top_k]
 
         if len(tree.leaves) == 0:
             break
@@ -121,7 +110,7 @@ def main():
 
         old_leaves = tree.leaves
         tree.reset_leaves()
-        for leaf in old_leaves:
+        for leaf in tqdm.tqdm(old_leaves):
             state = copy.deepcopy(leaf.state)
             state['actions'].append([None, None])
             for column, (top_action, bottom_action) in enumerate(player_mat.actions):

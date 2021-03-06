@@ -121,7 +121,7 @@ def produce(state: dict) -> typing.List[dict]:
     num_production_hexes = 3 if 'production' in state['upgrades top'] else 2
     workers = collections.defaultdict(lambda: 0)
     for pos in state['workers']:
-        if board.board[pos].type in ['grain', 'metal', 'oil', 'wood']:
+        if board.board[pos].type in ['grain', 'metal', 'oil', 'wood', 'workers']:
             workers[pos] += 1
 
     final_states = []
@@ -131,7 +131,14 @@ def produce(state: dict) -> typing.List[dict]:
         for hex_id in hex_ids:
             hex_type = board.board[hex_id].type
             add = workers[hex_id]
-            final_state[hex_type] += add
+            if hex_type == 'workers':
+                for i in range(add):
+                    if len(final_state['workers']) < 8:
+                        final_state['workers'].append(hex_id)
+                    else:
+                        break
+            else:
+                final_state[hex_type] += add
             strings.append('{} {} on H{}'.format(add, hex_type, hex_id))
         final_state['actions'][-1][0] = 'Produce {}'.format(' and '.join(strings))
         final_states.append(final_state)
