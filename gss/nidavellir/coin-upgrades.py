@@ -1,9 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-# Copyright © 2021 Martin Ueding <mu@martin-ueding.de>
-
 import argparse
+import collections
 import copy
 import itertools
 import json
@@ -11,10 +7,10 @@ import pprint
 import typing
 
 import anytree
-import tdqm
+import tqdm
 
 
-def make_bank() -> typing.Dict[int, int]:
+def make_bank(coins: list) -> typing.Dict[int, int]:
     bank = {}
     for value in range(5, 12):
         bank[value] = 3
@@ -22,6 +18,9 @@ def make_bank() -> typing.Dict[int, int]:
         bank[value] = 2
     for value in range(15, 26):
         bank[value] = 1
+    for coin in coins:
+        if coin >= 5:
+            bank[coin] -= 1
     return bank
 
 
@@ -29,36 +28,49 @@ def make_begin() -> list:
     return [2, 3, 4, 5]
 
 
-def possible_upgrades(coins: list, bank: dict) -> list:
+def possible_upgrades(coins: list) -> list:
     new_states = []
+    bank = make_bank(coins)
     for selected in itertools.combinations(coins, 2):
         keep = min(selected)
         new = min(selected) + max(selected)
-        while bank[new] == 0 and new <= 25:
+        while new <= 25 and bank[new] == 0:
             new += 1
         if new <= 25:
-            new_bank = copy.copy(bank)
-            new_bank[new] -= 1
             new_coins = copy.copy(coins)
             new_coins.remove(max(selected))
             new_coins.append(new)
-            new_states.append(dict(coins=new_coins, bank=new_bank))
+            new_states.append(new_coins)
     return new_states
 
 
 def main():
     options = _parse_args()
 
-    state = dict(coins=make_begin(), bank=make_bank())
+    state = make_begin()
     start = anytree.Node(state)
     print(anytree.RenderTree(start))
 
-    leaves = [start]
+    leaves = [state]
     for round in range(8):
         old_leaves = leaves
         leaves = []
         for leaf in tqdm.tqdm(old_leaves):
-            leaves += possible_upgrades(leaf['coins'], leaf['bank'])
+            leaves += possible_upgrades(leaf)
+
+    leaves.sort(key=lambda leaf: sum(leaf))
+    pprint.pprint(leaves[:10], compact=True, width=100)
+
+    bins = collections.defaultdict(list)
+    for leaf in leaves:
+        s = sum(leaf)
+        bins[s].append(leaf)
+
+    for score, states in sorted(bins.items()):
+        print(score, len(states))
+        pprint.pprint(states[:3])
+        print()
+
 
 
 def _parse_args():

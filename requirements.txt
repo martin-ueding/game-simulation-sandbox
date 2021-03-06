@@ -1,1 +1,2 @@
-tqdm
+tqdm~=4.59.0
+anytree~=2.8.0
