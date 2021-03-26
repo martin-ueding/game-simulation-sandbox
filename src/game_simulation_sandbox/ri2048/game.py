@@ -5,19 +5,19 @@ import typing
 import numpy as np
 
 
-Direction = collections.namedtuple('Direction', ['name', 'transpose', 'reverse'])
+Direction = collections.namedtuple("Direction", ["name", "transpose", "reverse"])
 
 directions = [
-    Direction('left', False, False),
-    Direction('right', False, True),
-    Direction('up', True, False),
-    Direction('down', True, True)
+    Direction("left", False, False),
+    Direction("right", False, True),
+    Direction("up", True, False),
+    Direction("down", True, True),
 ]
 
 
 class Game(object):
     def __init__(self):
-        self.board = np.zeros((4, 4), dtype='int')
+        self.board = np.zeros((4, 4), dtype="int")
         self.score = 0
         self.spawn()
         self.spawn()
@@ -48,7 +48,7 @@ class Game(object):
                     sum_merges += non_zero[j]
                     del non_zero[j + 1]
                 j += 1
-            row = non_zero + [0]*(4 - len(non_zero))
+            row = non_zero + [0] * (4 - len(non_zero))
             board[i, :] = row
         self.board = transform_board(board, direction, False)
         self.score += sum_merges

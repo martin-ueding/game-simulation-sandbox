@@ -18,7 +18,7 @@ from . import game
 
 tf.compat.v1.enable_v2_behavior()
 
-#Spec = tensor_spec.BoundedTensorSpec
+# Spec = tensor_spec.BoundedTensorSpec
 Spec = array_spec.BoundedArraySpec
 
 
@@ -26,13 +26,25 @@ class Environment(py_environment.PyEnvironment):
     def __init__(self):
         super().__init__()
         self._action_spec = Spec(
-            shape=(4,), dtype=np.float32, name='action', minimum=0.0, maximum=1.0,
+            shape=(4,),
+            dtype=np.float32,
+            name="action",
+            minimum=0.0,
+            maximum=1.0,
         )
         self._observation_spec = Spec(
-            shape=(16, 18), dtype=np.float32, name='observation', minimum=0.0, maximum=1.0,
+            shape=(16, 18),
+            dtype=np.float32,
+            name="observation",
+            minimum=0.0,
+            maximum=1.0,
         )
         self._reward_spec = Spec(
-            shape=(), dtype=np.float32, name='reward', minimum=0.0, maximum=131072/2,
+            shape=(),
+            dtype=np.float32,
+            name="reward",
+            minimum=0.0,
+            maximum=131072 / 2,
         )
 
     def observation_spec(self):
@@ -51,7 +63,9 @@ class Environment(py_environment.PyEnvironment):
     def _step(self, action) -> ts.TimeStep:
         # print(action)
         action_index = np.argmax(action)
-        reward = np.array(self.game.move(game.directions[action_index]), dtype=np.float32)
+        reward = np.array(
+            self.game.move(game.directions[action_index]), dtype=np.float32
+        )
         if self.game.is_game_over():
             return ts.termination(self._represent(), self.game.score)
         self.game.spawn()

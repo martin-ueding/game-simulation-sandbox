@@ -45,7 +45,7 @@ def possible_upgrades(coins: list) -> typing.List[typing.List[int]]:
 
 
 def make_name(coins: typing.List[int]) -> str:
-    return ', '.join(map(str, sorted(coins)))
+    return ", ".join(map(str, sorted(coins)))
 
 
 def main():
@@ -83,13 +83,12 @@ def main():
     sorted(leaves[0].coins)
 
 
-
 def _parse_args():
-    parser = argparse.ArgumentParser(description='')
+    parser = argparse.ArgumentParser(description="")
     options = parser.parse_args()
 
     return options
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

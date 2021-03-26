@@ -2,10 +2,13 @@ import collections
 
 from gss.scythe import actions
 
-PlayerMat = collections.namedtuple('PlayerMat', ['actions', 'upgrade', 'deploy', 'build', 'enlist'])
-Costs = collections.namedtuple('Costs', ['fixed', 'variable', 'reward'])
+PlayerMat = collections.namedtuple(
+    "PlayerMat", ["actions", "upgrade", "deploy", "build", "enlist"]
+)
+Costs = collections.namedtuple("Costs", ["fixed", "variable", "reward"])
 
-mats = {'innovative': PlayerMat(
+mats = {
+    "innovative": PlayerMat(
         actions=[
             (actions.trade, actions.upgrade),
             (actions.produce, actions.deploy),

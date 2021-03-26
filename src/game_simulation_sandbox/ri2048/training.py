@@ -50,7 +50,7 @@ def make_agent():
             tf.keras.layers.Dense(32, activation=tf.keras.activations.relu),
             tf.keras.layers.Dense(4, activation=tf.keras.activations.softmax),
         ],
-        input_spec=train_env.observation_spec()
+        input_spec=train_env.observation_spec(),
     )
 
     # actor_net = actor_distribution_network.ActorDistributionNetwork(
@@ -69,7 +69,8 @@ def make_agent():
         optimizer=optimizer,
         normalize_returns=True,
         use_advantage_loss=False,
-        train_step_counter=train_step_counter)
+        train_step_counter=train_step_counter,
+    )
     tf_agent.initialize()
 
     print(actor_net.losses)
@@ -81,7 +82,8 @@ def make_agent():
     replay_buffer = tf_uniform_replay_buffer.TFUniformReplayBuffer(
         data_spec=tf_agent.collect_data_spec,
         batch_size=train_env.batch_size,
-        max_length=replay_buffer_capacity)
+        max_length=replay_buffer_capacity,
+    )
 
     # (Optional) Optimize by wrapping some of the code in a graph using TF function.
     tf_agent.train = common.function(tf_agent.train)
@@ -96,7 +98,11 @@ def make_agent():
     for _ in tqdm.tqdm(range(num_iterations)):
         # Collect a few episodes using collect_policy and save to the replay buffer.
         collect_episode(
-            train_env, tf_agent.collect_policy, collect_episodes_per_iteration, replay_buffer)
+            train_env,
+            tf_agent.collect_policy,
+            collect_episodes_per_iteration,
+            replay_buffer,
+        )
 
         # Use data from the buffer and update the agent's network.
         experience = replay_buffer.gather_all()
@@ -106,20 +112,22 @@ def make_agent():
         step = tf_agent.train_step_counter.numpy()
 
         if step % log_interval == 0:
-            print('\nstep = {0}: loss = {1}'.format(step, train_loss.loss))
+            print("\nstep = {0}: loss = {1}".format(step, train_loss.loss))
 
         if step % eval_interval == 0:
-            avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
-            print('\nstep = {0}: Average Return = {1}'.format(step, avg_return))
+            avg_return = compute_avg_return(
+                eval_env, tf_agent.policy, num_eval_episodes
+            )
+            print("\nstep = {0}: Average Return = {1}".format(step, avg_return))
             returns.append(avg_return)
 
         steps = np.arange(0, len(returns)) * eval_interval
         pl.clf()
-        pl.plot(steps, returns, marker='o')
-        pl.ylabel('Average Return')
-        pl.xlabel('Step')
-        pl.savefig('training.pdf')
-        pl.savefig('training.png', dpi=150)
+        pl.plot(steps, returns, marker="o")
+        pl.ylabel("Average Return")
+        pl.xlabel("Step")
+        pl.savefig("training.pdf")
+        pl.savefig("training.png", dpi=150)
 
 
 def compute_avg_return(environment, policy, num_episodes=10):
