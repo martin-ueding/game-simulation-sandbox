@@ -24,11 +24,11 @@ def make_bank(coins: list) -> typing.Dict[int, int]:
     return bank
 
 
-def make_begin() -> list:
+def make_begin() -> typing.List[int]:
     return [2, 3, 4, 5]
 
 
-def possible_upgrades(coins: list) -> list:
+def possible_upgrades(coins: list) -> typing.List[typing.List[int]]:
     new_states = []
     bank = make_bank(coins)
     for selected in itertools.combinations(coins, 2):
@@ -44,32 +44,43 @@ def possible_upgrades(coins: list) -> list:
     return new_states
 
 
+def make_name(coins: typing.List[int]) -> str:
+    return ', '.join(map(str, sorted(coins)))
+
+
 def main():
     options = _parse_args()
 
     state = make_begin()
-    start = anytree.Node(state)
+    start = anytree.Node(make_name(state), coins=state)
     print(anytree.RenderTree(start))
 
-    leaves = [state]
+    leaves = [start]
     for round in range(8):
         old_leaves = leaves
         leaves = []
         for leaf in tqdm.tqdm(old_leaves):
-            leaves += possible_upgrades(leaf)
+            states = possible_upgrades(leaf.coins)
+            for state in states:
+                node = anytree.Node(make_name(state), coins=state, parent=leaf)
+                leaves.append(node)
 
-    leaves.sort(key=lambda leaf: sum(leaf))
+        leaves.sort(reverse=True, key=lambda leaf: sum(leaf.coins))
+        # leaves = leaves[:100]
     pprint.pprint(leaves[:10], compact=True, width=100)
+    print(len(leaves))
 
     bins = collections.defaultdict(list)
     for leaf in leaves:
-        s = sum(leaf)
+        s = sum(leaf.coins)
         bins[s].append(leaf)
 
     for score, states in sorted(bins.items()):
         print(score, len(states))
         pprint.pprint(states[:3])
         print()
+
+    sorted(leaves[0].coins)
 
 
 
