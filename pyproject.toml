@@ -6,9 +6,10 @@ authors = ["Martin Ueding <mu@martin-ueding.de>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "3.8.*"
 tqdm = "^4.59.0"
 anytree = "^2.8.0"
+tensorflow = "^2.4.1"
 
 [tool.poetry.dev-dependencies]
 
