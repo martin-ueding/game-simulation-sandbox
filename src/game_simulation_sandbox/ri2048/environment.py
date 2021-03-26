@@ -14,7 +14,7 @@ from tf_agents.environments import wrappers
 from tf_agents.environments import suite_gym
 from tf_agents.trajectories import time_step as ts
 
-import ri2048.game
+from . import game
 
 tf.compat.v1.enable_v2_behavior()
 
@@ -45,13 +45,13 @@ class Environment(py_environment.PyEnvironment):
         return self._reward_spec
 
     def _reset(self) -> ts.TimeStep:
-        self.game = ri2048.game.Game()
+        self.game = game.Game()
         return ts.restart(self._represent())
 
     def _step(self, action) -> ts.TimeStep:
         # print(action)
         action_index = np.argmax(action)
-        reward = np.array(self.game.move(ri2048.game.directions[action_index]), dtype=np.float32)
+        reward = np.array(self.game.move(game.directions[action_index]), dtype=np.float32)
         if self.game.is_game_over():
             return ts.termination(self._represent(), self.game.score)
         self.game.spawn()

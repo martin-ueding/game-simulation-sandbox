@@ -4,12 +4,28 @@ version = "0.1.0"
 description = "Simulation of board and computer games using graph and machine learning algorithms"
 authors = ["Martin Ueding <mu@martin-ueding.de>"]
 license = "MIT"
+repository = "https://github.com/martin-ueding/game-simulation-sandbox"
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Games/Entertainment :: Turn Based Strategy",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed"
+]
+
+[tool.poetry.scripts]
+gss-ri2048 = "game_simulation_sandbox.ri2048.__main__:main"
+gss-scythe = "game_simulation_sandbox.scythe.__main__:main"
+gss-nidavellir = "game_simulation_sandbox.nidavellir.coin_upgrades:main"
 
 [tool.poetry.dependencies]
 python = "3.8.*"
 tqdm = "^4.59.0"
 anytree = "^2.8.0"
 tensorflow = "^2.4.1"
+matplotlib = "^3.3.4"
+tf-agents = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 

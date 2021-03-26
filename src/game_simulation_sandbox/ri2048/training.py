@@ -21,7 +21,7 @@ from tf_agents.utils import common
 
 import matplotlib.pyplot as pl
 
-import ri2048.environment
+from . import environment
 
 tf.compat.v1.enable_v2_behavior()
 
@@ -39,8 +39,8 @@ def make_agent():
     num_eval_episodes = 10
     eval_interval = 5
 
-    train_env = ri2048.environment.make_tf_environment()
-    eval_env = ri2048.environment.make_tf_environment()
+    train_env = environment.make_tf_environment()
+    eval_env = environment.make_tf_environment()
 
     actor_net = tf_agents.networks.Sequential(
         layers=[
@@ -120,7 +120,6 @@ def make_agent():
         pl.xlabel('Step')
         pl.savefig('training.pdf')
         pl.savefig('training.png', dpi=150)
-
 
 
 def compute_avg_return(environment, policy, num_episodes=10):
