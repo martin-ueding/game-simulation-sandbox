@@ -17,6 +17,7 @@ def main():
                     g.spawn()
                     break
         rewards.append(reward)
+
     print(rewards)
     pl.clf()
     pl.hist(rewards, bins='sturges')

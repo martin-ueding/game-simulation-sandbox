@@ -67,7 +67,7 @@ def make_actor_policy(input_tensor_spec, action_spec):
 
 
 def make_agent():
-    env_name = "CartPole-v0"
+    env_name = "FrozenLake-v0"
     num_iterations = 20000
     collect_episodes_per_iteration = 1
     replay_buffer_capacity = 100000
@@ -79,12 +79,16 @@ def make_agent():
     num_eval_episodes = 10
     eval_interval = 100
 
-    train_env = environment.make_tf_environment()
-    eval_env = environment.make_tf_environment()
-    # train_py_env = suite_gym.load(env_name)
-    # eval_py_env = suite_gym.load(env_name)
-    # train_env = tf_py_environment.TFPyEnvironment(train_py_env)
-    # eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
+    # train_env = environment.make_tf_environment()
+    # eval_env = environment.make_tf_environment()
+    train_py_env = suite_gym.load(env_name)
+    eval_py_env = suite_gym.load(env_name)
+    train_env = tf_py_environment.TFPyEnvironment(train_py_env)
+    eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
+
+    print('Observation and action:')
+    print(train_env.observation_spec())
+    print(train_env.action_spec())
 
 
 # actor_net = tf_agents.networks.Sequential(
@@ -138,11 +142,12 @@ def make_agent():
     # with `num_actions` units to generate one q_value per available action as
     # it's output.
     dense_layers = [
-        tf_agents.keras_layers.InnerReshape((4, 4, 18), (16 * 18,)),
-        dense_layer(100),
-        dense_layer(100),
-        dense_layer(100),
-        dense_layer(50),
+        # tf_agents.keras_layers.InnerReshape((4, 4, 18), (16 * 18,)),
+        tf.keras.layers.Embedding(16, 4),
+        # dense_layer(100),
+        # dense_layer(16),
+        # dense_layer(100),
+        # dense_layer(50),
     ]
     q_values_layer = tf.keras.layers.Dense(
         num_actions,
@@ -150,8 +155,8 @@ def make_agent():
         kernel_initializer=tf.keras.initializers.RandomUniform(
             minval=-0.03, maxval=0.03),
         bias_initializer=tf.keras.initializers.Constant(-0.2))
-    q_net = sequential.Sequential(dense_layers + [q_values_layer])
-
+    # q_net = sequential.Sequential(dense_layers + [q_values_layer])
+    q_net = sequential.Sequential(dense_layers)
 
     optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=learning_rate)
 
