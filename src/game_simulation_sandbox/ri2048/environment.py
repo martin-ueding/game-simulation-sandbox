@@ -26,18 +26,18 @@ class Environment(py_environment.PyEnvironment):
     def __init__(self):
         super().__init__()
         self._action_spec = Spec(
-            shape=(4,),
-            dtype=np.float32,
+            shape=(),
+            dtype=np.int32,
             name="action",
-            minimum=0.0,
-            maximum=1.0,
+            minimum=0,
+            maximum=3,
         )
         self._observation_spec = Spec(
-            shape=(16, 18),
-            dtype=np.float32,
+            shape=(16,),
+            dtype=np.int32,
             name="observation",
-            minimum=0.0,
-            maximum=1.0,
+            minimum=0,
+            maximum=18,
         )
         self._reward_spec = Spec(
             shape=(),
@@ -61,10 +61,10 @@ class Environment(py_environment.PyEnvironment):
         return ts.restart(self._represent())
 
     def _step(self, action) -> ts.TimeStep:
-        # print(action)
-        action_index = np.argmax(action)
+        # print(self.game.board)
+        # print(game.directions[action].name)
         reward = np.array(
-            self.game.move(game.directions[action_index]), dtype=np.float32
+            self.game.move(game.directions[action]), dtype=np.float32
         )
         if self.game.is_game_over():
             return ts.termination(self._represent(), self.game.score)
@@ -72,12 +72,12 @@ class Environment(py_environment.PyEnvironment):
         return ts.transition(self._represent(), reward, 1.0)
 
     def _represent(self):
-        observation = np.zeros((16, 18), dtype=np.float32)
+        observation = np.zeros(16, dtype=np.int32)
         board_flat = self.game.board.flatten()
         for i in range(board_flat.shape[0]):
             if board_flat[i] > 0:
                 exponent = int(np.round(np.log2(board_flat[i])))
-                observation[i, exponent] = 1.0
+                observation[i] = exponent + 1
         return observation
 
 

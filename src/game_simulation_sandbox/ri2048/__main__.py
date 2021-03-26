@@ -3,13 +3,15 @@
 
 import argparse
 
-from . import game
+from . import environment
 from . import training
 
 
 def main():
     parser = argparse.ArgumentParser()
     options = parser.parse_args()
+
+    environment.validate()
 
     training.make_agent()
 
