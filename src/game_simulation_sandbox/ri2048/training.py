@@ -24,6 +24,7 @@ from tf_agents.utils import common
 from tf_agents.trajectories import time_step as ts
 from tf_agents.policies import actor_policy
 from tf_agents.specs import tensor_spec
+from tf_agents.networks import sequential
 
 import matplotlib.pyplot as pl
 
@@ -67,38 +68,43 @@ def make_actor_policy(input_tensor_spec, action_spec):
 
 def make_agent():
     env_name = "CartPole-v0"
-    num_iterations = 1000
-    collect_episodes_per_iteration = 5
-    replay_buffer_capacity = 2000
+    num_iterations = 20000
+    collect_episodes_per_iteration = 1
+    replay_buffer_capacity = 100000
 
     fc_layer_params = (32, 32, 32, 4)
 
     learning_rate = 1e-3
     log_interval = 25
     num_eval_episodes = 10
-    eval_interval = 5
+    eval_interval = 100
 
     train_env = environment.make_tf_environment()
     eval_env = environment.make_tf_environment()
+    # train_py_env = suite_gym.load(env_name)
+    # eval_py_env = suite_gym.load(env_name)
+    # train_env = tf_py_environment.TFPyEnvironment(train_py_env)
+    # eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
 
-    actor_net = tf_agents.networks.Sequential(
-        layers=[
-            # tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(32, activation=tf.keras.activations.relu),
-            tf_agents.keras_layers.InnerReshape((16, 32), (16 * 32,)),
-            tf.keras.layers.Dense(32, activation=tf.keras.activations.relu),
-            tf.keras.layers.Dense(4, activation=tf.keras.activations.softmax),
-        ],
-        input_spec=train_env.observation_spec(),
-    )
+
+# actor_net = tf_agents.networks.Sequential(
+    #     layers=[
+    #         # tf.keras.layers.Flatten(),
+    #         tf.keras.layers.Dense(32, activation=tf.keras.activations.relu),
+    #         tf_agents.keras_layers.InnerReshape((16, 32), (16 * 32,)),
+    #         tf.keras.layers.Dense(32, activation=tf.keras.activations.relu),
+    #         tf.keras.layers.Dense(4, activation=tf.keras.activations.softmax),
+    #     ],
+    #     input_spec=train_env.observation_spec(),
+    # )
 
     # print(actor_net.losses)
     # actor_net.summary()
 
-    actor_net2 = actor_distribution_network.ActorDistributionNetwork(
-        train_env.observation_spec(),
-        train_env.action_spec(),
-        fc_layer_params=fc_layer_params)
+    # actor_net2 = actor_distribution_network.ActorDistributionNetwork(
+    #     train_env.observation_spec(),
+    #     train_env.action_spec(),
+    #     fc_layer_params=fc_layer_params)
 
     # actor_policy = actor_policy.ActorPolicy(
     #     time_step_spec = train_env.time_step_spec,
@@ -112,20 +118,67 @@ def make_agent():
     q_net = q_network.QNetwork(
         train_env.observation_spec(),
         train_env.action_spec(),
-        fc_layer_params=(100, 100, 100))
+        fc_layer_params=(100, 50))
+
+
+    fc_layer_params = (100, 50)
+    action_tensor_spec = tensor_spec.from_spec(train_env.action_spec())
+    num_actions = action_tensor_spec.maximum - action_tensor_spec.minimum + 1
+
+    # Define a helper function to create Dense layers configured with the right
+    # activation and kernel initializer.
+    def dense_layer(num_units):
+        return tf.keras.layers.Dense(
+            num_units,
+            activation=tf.keras.activations.relu,
+            kernel_initializer=tf.keras.initializers.VarianceScaling(
+                scale=2.0, mode='fan_in', distribution='truncated_normal'))
+
+    # QNetwork consists of a sequence of Dense layers followed by a dense layer
+    # with `num_actions` units to generate one q_value per available action as
+    # it's output.
+    dense_layers = [
+        tf_agents.keras_layers.InnerReshape((4, 4, 18), (16 * 18,)),
+        dense_layer(100),
+        dense_layer(100),
+        dense_layer(100),
+        dense_layer(50),
+    ]
+    q_values_layer = tf.keras.layers.Dense(
+        num_actions,
+        activation=None,
+        kernel_initializer=tf.keras.initializers.RandomUniform(
+            minval=-0.03, maxval=0.03),
+        bias_initializer=tf.keras.initializers.Constant(-0.2))
+    q_net = sequential.Sequential(dense_layers + [q_values_layer])
+
 
     optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=learning_rate)
 
     train_step_counter = tf.compat.v2.Variable(0)
+
+    print(train_env.action_spec())
 
     tf_agent = dqn_agent.DqnAgent(
         train_env.time_step_spec(),
         train_env.action_spec(),
         q_network=q_net,
         optimizer=optimizer,
+        td_errors_loss_fn=common.element_wise_squared_loss,
         train_step_counter=train_step_counter,
     )
     tf_agent.initialize()
+
+    q_net.summary()
+    for layer in q_net.layers:
+        print(layer)
+        print(layer.name)
+        if hasattr(layer, 'activation'):
+            print(layer.activation)
+        if hasattr(layer, 'layers'):
+            for layer in layer.layers[1:]:
+                print(layer.name)
+                print(layer.activation)
 
     avg_return = compute_avg_return(train_env, tf_agent.policy, 5)
     print('Average return:\n', avg_return)
@@ -157,7 +210,7 @@ def make_agent():
     collect_episode(
         train_env,
         tf_agent.collect_policy,
-        batch_size,
+        100,
         replay_buffer,
     )
 
@@ -175,23 +228,19 @@ def make_agent():
         train_loss = tf_agent.train(experience).loss
         step = tf_agent.train_step_counter.numpy()
 
-        if step % log_interval == 0:
-            print("\nstep = {0}: loss = {1}".format(step, train_loss))
-
         if step % eval_interval == 0:
             avg_return = compute_avg_return(
                 eval_env, tf_agent.policy, num_eval_episodes
             )
-            print("\nstep = {0}: Average Return = {1}".format(step, avg_return))
             returns.append(avg_return)
 
-        steps = np.arange(0, len(returns)) * eval_interval
-        pl.clf()
-        pl.plot(steps, returns, marker="o")
-        pl.ylabel("Average Return")
-        pl.xlabel("Step")
-        pl.savefig("training.pdf")
-        pl.savefig("training.png", dpi=150)
+            steps = np.arange(0, len(returns)) * eval_interval
+            pl.clf()
+            pl.plot(steps, returns, marker="o")
+            pl.ylabel("Average Return")
+            pl.xlabel("Step")
+            pl.savefig("training.pdf")
+            pl.savefig("training.png", dpi=150)
 
 
 def compute_avg_return(env, policy, num_episodes=10):

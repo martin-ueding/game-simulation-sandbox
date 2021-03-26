@@ -23,21 +23,33 @@ Spec = array_spec.BoundedArraySpec
 
 
 class Environment(py_environment.PyEnvironment):
-    def __init__(self):
+    def __init__(self, use_onehot=False):
         super().__init__()
+        if use_onehot:
+            self._represent = self._represent_onehot
+            self._observation_spec = Spec(
+                shape=(4, 4, 18),
+                dtype=np.float32,
+                name="observation",
+                minimum=0.0,
+                maximum=1.0,
+            )
+        else:
+            self._represent = self._represent_dense
+            self._observation_spec = Spec(
+                shape=(16,),
+                dtype=np.int32,
+                name="observation",
+                minimum=0,
+                maximum=18,
+            )
+
         self._action_spec = Spec(
             shape=(),
             dtype=np.int32,
             name="action",
             minimum=0,
             maximum=3,
-        )
-        self._observation_spec = Spec(
-            shape=(16,),
-            dtype=np.int32,
-            name="observation",
-            minimum=0,
-            maximum=18,
         )
         self._reward_spec = Spec(
             shape=(),
@@ -71,13 +83,22 @@ class Environment(py_environment.PyEnvironment):
         self.game.spawn()
         return ts.transition(self._represent(), reward, 1.0)
 
-    def _represent(self):
+    def _represent_dense(self):
         observation = np.zeros(16, dtype=np.int32)
         board_flat = self.game.board.flatten()
         for i in range(board_flat.shape[0]):
             if board_flat[i] > 0:
                 exponent = int(np.round(np.log2(board_flat[i])))
                 observation[i] = exponent + 1
+        return observation
+
+    def _represent_onehot(self):
+        observation = np.zeros((4, 4, 18), dtype=np.float32)
+        for i in range(4):
+            for j in range(4):
+                if self.game.board[i, j] > 0:
+                    exponent = int(np.round(np.log2(self.game.board[i, j])))
+                    observation[i, j, exponent] = 1.0
         return observation
 
 
@@ -87,4 +108,4 @@ def validate():
 
 
 def make_tf_environment() -> tf_py_environment.TFPyEnvironment:
-    return tf_py_environment.TFPyEnvironment(Environment())
+    return tf_py_environment.TFPyEnvironment(Environment(True))
