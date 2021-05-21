@@ -19,6 +19,7 @@ gss-ri2048 = "game_simulation_sandbox.ri2048.__main__:main"
 gss-ri2048-simple = "game_simulation_sandbox.ri2048.simple_strategy:main"
 gss-scythe = "game_simulation_sandbox.scythe.__main__:main"
 gss-nidavellir = "game_simulation_sandbox.nidavellir.coin_upgrades:main"
+gss-frozenlake = "game_simulation_sandbox.frozenlake.main:main"
 
 [tool.poetry.dependencies]
 python = "3.8.*"

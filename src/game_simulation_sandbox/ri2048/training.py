@@ -72,10 +72,12 @@ def make_agent():
 
     fc_layer_params = (32, 32, 32, 4)
 
+    initial_collect_steps = 100
     learning_rate = 1e-3
     log_interval = 25
     num_eval_episodes = 10
-    eval_interval = 100
+    eval_interval = 50
+    batch_size = 64
 
     # train_env = environment.make_tf_environment()
     # eval_env = environment.make_tf_environment()
@@ -140,7 +142,9 @@ def make_agent():
     # it's output.
     dense_layers = [
         # tf_agents.keras_layers.InnerReshape((4, 4, 18), (16 * 18,)),
-        tf.keras.layers.Embedding(16, 4),
+        tf.keras.layers.Embedding(16, 4, kernel_initializer=tf.keras.initializers.RandomUniform(
+            minval=-0.03, maxval=0.03
+        )),
         # dense_layer(100),
         # dense_layer(16),
         # dense_layer(100),
@@ -157,9 +161,9 @@ def make_agent():
     # q_net = sequential.Sequential(dense_layers + [q_values_layer])
     q_net = sequential.Sequential(dense_layers)
 
-    optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=learning_rate)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    train_step_counter = tf.compat.v2.Variable(0)
+    train_step_counter = tf.Variable(0)
 
     print(train_env.action_spec())
 
@@ -207,7 +211,6 @@ def make_agent():
     returns = [avg_return]
     losses = []
 
-    batch_size = 64
     dataset = replay_buffer.as_dataset(
         num_parallel_calls=3, sample_batch_size=batch_size, num_steps=2
     ).prefetch(3)
@@ -215,9 +218,11 @@ def make_agent():
     collect_episode(
         train_env,
         tf_agent.collect_policy,
-        100,
+        collect_episodes_per_iteration + batch_size,
         replay_buffer,
     )
+
+    weights = []
 
     for _ in tqdm.tqdm(range(num_iterations)):
         # Collect a few episodes using collect_policy and save to the replay buffer.
@@ -230,6 +235,7 @@ def make_agent():
 
         # Use data from the buffer and update the agent's network.
         experience, unused_info = next(iterator)
+        print(experience)
         losses.append(tf_agent.train(experience).loss)
         step = tf_agent.train_step_counter.numpy()
 
@@ -238,22 +244,49 @@ def make_agent():
                 eval_env, tf_agent.policy, num_eval_episodes
             )
             returns.append(avg_return)
+            weights.append(dense_layers[0].get_weights())
 
             steps = np.arange(0, len(returns)) * eval_interval
             pl.clf()
+            pl.gcf().set_size_inches((7, 7))
             pl.plot(steps, returns, marker="o")
             pl.ylabel("Average Return")
             pl.xlabel("Step")
+            pl.tight_layout()
             pl.savefig("training.pdf")
             pl.savefig("training.png", dpi=150)
 
             steps = np.arange(1, len(losses) + 1)
             pl.clf()
+            pl.gcf().set_size_inches((7, 7))
             pl.semilogy(steps, losses, marker=".", linestyle="none", alpha=0.5)
             pl.ylabel("Loss")
             pl.xlabel("Steps")
+            pl.tight_layout()
             pl.savefig("loss.pdf")
             pl.savefig("loss.png", dpi=150)
+
+            pl.clf()
+            pl.gcf().set_size_inches((18, 48))
+            all_weights = np.stack(weights)
+            print(all_weights.shape)
+            ylim = np.min(all_weights.flatten()), np.max(all_weights.flatten())
+            steps = np.arange(all_weights.shape[0]) * eval_interval
+            for row in range(all_weights.shape[2]):
+                for col in range(all_weights.shape[3]):
+                    ax = pl.gcf().add_subplot(
+                        all_weights.shape[2],
+                        all_weights.shape[3],
+                        row * all_weights.shape[3] + col + 1,
+                    )
+                    x = steps
+                    y = all_weights[:, 0, row, col]
+                    ax.plot(x, y, marker="o")
+                    ax.grid(True)
+                    ax.set_ylim(ylim)
+            pl.tight_layout()
+            pl.savefig("weights.pdf")
+            pl.savefig("weights.png", dpi=150)
 
 
 def compute_avg_return(env, policy, num_episodes=10):
