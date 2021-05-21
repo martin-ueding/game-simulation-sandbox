@@ -75,9 +75,7 @@ class Environment(py_environment.PyEnvironment):
     def _step(self, action) -> ts.TimeStep:
         # print(self.game.board)
         # print(game.directions[action].name)
-        reward = np.array(
-            self.game.move(game.directions[action]), dtype=np.float32
-        )
+        reward = np.array(self.game.move(game.directions[action]), dtype=np.float32)
         if self.game.is_game_over():
             return ts.termination(self._represent(), self.game.score)
         self.game.spawn()

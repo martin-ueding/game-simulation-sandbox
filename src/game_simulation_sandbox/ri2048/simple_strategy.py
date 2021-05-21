@@ -4,6 +4,7 @@ import matplotlib.pyplot as pl
 
 from . import game
 
+
 def main():
     rewards = []
     for i in tqdm.tqdm(range(1000)):
@@ -20,11 +21,11 @@ def main():
 
     print(rewards)
     pl.clf()
-    pl.hist(rewards, bins='sturges')
-    pl.title('Baseline with Simple Strategy')
-    pl.xlabel('Score')
-    pl.ylabel('Count')
+    pl.hist(rewards, bins="sturges")
+    pl.title("Baseline with Simple Strategy")
+    pl.xlabel("Score")
+    pl.ylabel("Count")
     pl.tight_layout()
-    pl.savefig('simple-strategy-rewards.png', dpi=300)
-    pl.savefig('simple-strategy-rewards.svg')
-    pl.savefig('simple-strategy-rewards.pdf')
+    pl.savefig("simple-strategy-rewards.png", dpi=300)
+    pl.savefig("simple-strategy-rewards.svg")
+    pl.savefig("simple-strategy-rewards.pdf")

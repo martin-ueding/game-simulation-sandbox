@@ -36,9 +36,8 @@ tf.compat.v1.enable_v2_behavior()
 class ActionNet(network.Network):
     def __init__(self, input_tensor_spec, output_tensor_spec):
         super(ActionNet, self).__init__(
-            input_tensor_spec=input_tensor_spec,
-            state_spec=(),
-            name='ActionNet')
+            input_tensor_spec=input_tensor_spec, state_spec=(), name="ActionNet"
+        )
         self._output_tensor_spec = output_tensor_spec
         self._sub_layers = [
             tf.keras.layers.Dense(32, activation=tf.keras.activations.relu),
@@ -60,9 +59,8 @@ def make_actor_policy(input_tensor_spec, action_spec):
     time_step_spec = ts.time_step_spec(input_tensor_spec)
     action_net = ActionNet(input_tensor_spec, action_spec)
     my_actor_policy = actor_policy.ActorPolicy(
-        time_step_spec=time_step_spec,
-        action_spec=action_spec,
-        actor_network=action_net)
+        time_step_spec=time_step_spec, action_spec=action_spec, actor_network=action_net
+    )
     return my_actor_policy
 
 
@@ -86,12 +84,11 @@ def make_agent():
     train_env = tf_py_environment.TFPyEnvironment(train_py_env)
     eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
 
-    print('Observation and action:')
+    print("Observation and action:")
     print(train_env.observation_spec())
     print(train_env.action_spec())
 
-
-# actor_net = tf_agents.networks.Sequential(
+    # actor_net = tf_agents.networks.Sequential(
     #     layers=[
     #         # tf.keras.layers.Flatten(),
     #         tf.keras.layers.Dense(32, activation=tf.keras.activations.relu),
@@ -120,10 +117,8 @@ def make_agent():
     # )
 
     q_net = q_network.QNetwork(
-        train_env.observation_spec(),
-        train_env.action_spec(),
-        fc_layer_params=(100, 50))
-
+        train_env.observation_spec(), train_env.action_spec(), fc_layer_params=(100, 50)
+    )
 
     fc_layer_params = (100, 50)
     action_tensor_spec = tensor_spec.from_spec(train_env.action_spec())
@@ -136,7 +131,9 @@ def make_agent():
             num_units,
             activation=tf.keras.activations.relu,
             kernel_initializer=tf.keras.initializers.VarianceScaling(
-                scale=2.0, mode='fan_in', distribution='truncated_normal'))
+                scale=2.0, mode="fan_in", distribution="truncated_normal"
+            ),
+        )
 
     # QNetwork consists of a sequence of Dense layers followed by a dense layer
     # with `num_actions` units to generate one q_value per available action as
@@ -153,8 +150,10 @@ def make_agent():
         num_actions,
         activation=None,
         kernel_initializer=tf.keras.initializers.RandomUniform(
-            minval=-0.03, maxval=0.03),
-        bias_initializer=tf.keras.initializers.Constant(-0.2))
+            minval=-0.03, maxval=0.03
+        ),
+        bias_initializer=tf.keras.initializers.Constant(-0.2),
+    )
     # q_net = sequential.Sequential(dense_layers + [q_values_layer])
     q_net = sequential.Sequential(dense_layers)
 
@@ -178,15 +177,15 @@ def make_agent():
     for layer in q_net.layers:
         print(layer)
         print(layer.name)
-        if hasattr(layer, 'activation'):
+        if hasattr(layer, "activation"):
             print(layer.activation)
-        if hasattr(layer, 'layers'):
+        if hasattr(layer, "layers"):
             for layer in layer.layers[1:]:
                 print(layer.name)
                 print(layer.activation)
 
     avg_return = compute_avg_return(train_env, tf_agent.policy, 5)
-    print('Average return:\n', avg_return)
+    print("Average return:\n", avg_return)
 
     eval_policy = tf_agent.policy
     collect_policy = tf_agent.collect_policy
@@ -209,9 +208,9 @@ def make_agent():
     losses = []
 
     batch_size = 64
-    dataset = replay_buffer.as_dataset(num_parallel_calls=3,
-                                       sample_batch_size=batch_size,
-                                       num_steps=2).prefetch(3)
+    dataset = replay_buffer.as_dataset(
+        num_parallel_calls=3, sample_batch_size=batch_size, num_steps=2
+    ).prefetch(3)
     iterator = iter(dataset)
     collect_episode(
         train_env,
@@ -250,7 +249,7 @@ def make_agent():
 
             steps = np.arange(1, len(losses) + 1)
             pl.clf()
-            pl.semilogy(steps, losses, marker=".", linestyle='none', alpha=0.5)
+            pl.semilogy(steps, losses, marker=".", linestyle="none", alpha=0.5)
             pl.ylabel("Loss")
             pl.xlabel("Steps")
             pl.savefig("loss.pdf")
