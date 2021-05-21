@@ -206,6 +206,7 @@ def make_agent():
     # Evaluate the agent's policy once before training.
     avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
     returns = [avg_return]
+    losses = []
 
     batch_size = 64
     dataset = replay_buffer.as_dataset(num_parallel_calls=3,
@@ -230,7 +231,7 @@ def make_agent():
 
         # Use data from the buffer and update the agent's network.
         experience, unused_info = next(iterator)
-        train_loss = tf_agent.train(experience).loss
+        losses.append(tf_agent.train(experience).loss)
         step = tf_agent.train_step_counter.numpy()
 
         if step % eval_interval == 0:
@@ -246,6 +247,14 @@ def make_agent():
             pl.xlabel("Step")
             pl.savefig("training.pdf")
             pl.savefig("training.png", dpi=150)
+
+            steps = np.arange(1, len(losses) + 1)
+            pl.clf()
+            pl.semilogy(steps, losses, marker=".", linestyle='none', alpha=0.5)
+            pl.ylabel("Loss")
+            pl.xlabel("Steps")
+            pl.savefig("loss.pdf")
+            pl.savefig("loss.png", dpi=150)
 
 
 def compute_avg_return(env, policy, num_episodes=10):
