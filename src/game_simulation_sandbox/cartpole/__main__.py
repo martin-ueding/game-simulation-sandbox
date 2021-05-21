@@ -94,7 +94,7 @@ initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration = 1  # @param {type:"integer"}
 replay_buffer_max_length = 100000  # @param {type:"integer"}
 
-batch_size = 64  # @param {type:"integer"}
+batch_size = 4  # @param {type:"integer"}
 learning_rate = 1e-3  # @param {type:"number"}
 log_interval = 200  # @param {type:"integer"}
 
@@ -184,8 +184,6 @@ print(next_time_step)
 
 train_py_env = suite_gym.load(env_name)
 eval_py_env = suite_gym.load(env_name)
-
-breakpoint()
 
 
 # The Cartpole environment, like most environments, is written in pure Python. This is converted to TensorFlow using the `TFPyEnvironment` wrapper.
@@ -507,6 +505,7 @@ for _ in range(num_iterations):
 
     # Sample a batch of data from the buffer and update the agent's network.
     experience, unused_info = next(iterator)
+    print(experience)
     train_loss = agent.train(experience).loss
     losses.append(train_loss)
 
@@ -516,9 +515,7 @@ for _ in range(num_iterations):
         print("step = {0}: loss = {1}".format(step, train_loss))
 
     if step % eval_interval == 0:
-        avg_return = compute_avg_return(
-            eval_env, agent.policy, num_eval_episodes
-        )
+        avg_return = compute_avg_return(eval_env, agent.policy, num_eval_episodes)
         returns.append(avg_return)
 
         steps = np.arange(0, len(returns)) * eval_interval

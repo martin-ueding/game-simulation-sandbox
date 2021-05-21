@@ -4,7 +4,6 @@
 import argparse
 
 from . import environment
-from . import training
 
 
 def main():
@@ -12,8 +11,6 @@ def main():
     options = parser.parse_args()
 
     environment.validate()
-
-    training.make_agent()
 
 
 if __name__ == "__main__":
