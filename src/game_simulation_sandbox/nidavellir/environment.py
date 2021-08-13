@@ -24,11 +24,11 @@ class Environment(py_environment.PyEnvironment):
             maximum=25,
         )
         self._action_spec = Spec(
-            shape=(2,),
+            shape=(),
             dtype=np.int32,
             name="action",
             minimum=0,
-            maximum=3,
+            maximum=5,
         )
         self._reward_spec = Spec(
             shape=(),
@@ -54,19 +54,30 @@ class Environment(py_environment.PyEnvironment):
         return ts.restart(self._represent())
 
     def _step(self, action) -> ts.TimeStep:
-        selected = [self.coins[i] for i in action]
-        keep = min(selected)
-        old = max(selected)
-        if keep != old:
-            new = keep + old
-            while new <= 25 and self.bank[new] == 0:
-                new += 1
-            if new <= 25:
-                self.coins.remove(old)
-                self.coins.append(new)
-                self.bank[new] -= 1
-                if old >= 5:
-                    self.bank[old] += 1
+        if action == 0:
+            keep, old = self.coins[0], self.coins[1]
+        elif action == 1:
+            keep, old = self.coins[0], self.coins[2]
+        elif action == 2:
+            keep, old = self.coins[0], self.coins[3]
+        elif action == 3:
+            keep, old = self.coins[1], self.coins[2]
+        elif action == 4:
+            keep, old = self.coins[1], self.coins[3]
+        elif action == 5:
+            keep, old = self.coins[2], self.coins[3]
+        else:
+            raise ValueError()
+        new = keep + old
+        while new <= 25 and self.bank[new] == 0:
+            new += 1
+        if new <= 25:
+            self.coins.remove(old)
+            self.coins.append(new)
+            self.coins.sort()
+            self.bank[new] -= 1
+            if old >= 5:
+                self.bank[old] += 1
         self.round += 1
         if self.round == 8:
             return ts.termination(self._represent(), float(sum(self.coins)))
