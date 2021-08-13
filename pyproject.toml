@@ -18,7 +18,8 @@ classifiers = [
 gss-ri2048 = "game_simulation_sandbox.ri2048.__main__:main"
 gss-ri2048-simple = "game_simulation_sandbox.ri2048.simple_strategy:main"
 gss-scythe = "game_simulation_sandbox.scythe.__main__:main"
-gss-nidavellir = "game_simulation_sandbox.nidavellir.coin_upgrades:main"
+gss-nidavellir-full = "game_simulation_sandbox.nidavellir.coin_upgrades:main"
+gss-nidavellir-qlearn = "game_simulation_sandbox.nidavellir.qlearn:main"
 gss-frozenlake = "game_simulation_sandbox.frozenlake.__main__:main"
 
 [tool.poetry.dependencies]
@@ -28,6 +29,7 @@ anytree = "^2.8.0"
 tensorflow = "^2.4.1"
 matplotlib = "^3.3.4"
 tf-agents = "^0.7.1"
+coloredlogs = "^15.0.1"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
