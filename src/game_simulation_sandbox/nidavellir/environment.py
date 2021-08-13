@@ -1,16 +1,8 @@
-import abc
-import sys
-
 import numpy as np
 import tensorflow as tf
 from tf_agents.environments import py_environment
-from tf_agents.environments import suite_gym
-from tf_agents.environments import tf_environment
 from tf_agents.environments import tf_py_environment
-from tf_agents.environments import utils
-from tf_agents.environments import wrappers
 from tf_agents.specs import array_spec
-from tf_agents.specs import tensor_spec
 from tf_agents.trajectories import time_step as ts
 
 from . import coin_upgrades
@@ -32,7 +24,7 @@ class Environment(py_environment.PyEnvironment):
             maximum=25,
         )
         self._action_spec = Spec(
-            shape=(),
+            shape=(2,),
             dtype=np.int32,
             name="action",
             minimum=0,
@@ -45,7 +37,6 @@ class Environment(py_environment.PyEnvironment):
             minimum=0.0,
             maximum=58.0,
         )
-        self._reset()
 
     def observation_spec(self):
         return self._observation_spec
@@ -63,26 +54,26 @@ class Environment(py_environment.PyEnvironment):
         return ts.restart(self._represent())
 
     def _step(self, action) -> ts.TimeStep:
-        selected = self.coins[action]
+        selected = [self.coins[i] for i in action]
         keep = min(selected)
-        new = min(selected) + max(selected)
-        while new <= 25 and self.bank[new] == 0:
-            new += 1
-        if new <= 25:
-            self.coins.remove(max(selected))
-            self.coins.append(new)
+        old = max(selected)
+        if keep != old:
+            new = keep + old
+            while new <= 25 and self.bank[new] == 0:
+                new += 1
+            if new <= 25:
+                self.coins.remove(old)
+                self.coins.append(new)
+                self.bank[new] -= 1
+                if old >= 5:
+                    self.bank[old] += 1
         self.round += 1
         if self.round == 8:
-            return ts.termination(self._represent(), sum(self.coins))
-        return ts.transition(self._represent(), 0, 1.0)
+            return ts.termination(self._represent(), float(sum(self.coins)))
+        return ts.transition(self._represent(), 0.0, 1.0)
 
     def _represent(self):
-        return np.array(self.coins)
-
-
-def validate():
-    environment = Environment()
-    utils.validate_py_environment(environment, episodes=5)
+        return np.array(self.coins, dtype=np.int32)
 
 
 def make_tf_environment() -> tf_py_environment.TFPyEnvironment:
