@@ -11,6 +11,7 @@ repos:
         entry: poetry run pytest -vv
         language: system
         files: '.*\.py'
+        pass_filenames: false
   - repo: https://github.com/asottile/reorder_python_imports
     rev: v2.5.0
     hooks:
