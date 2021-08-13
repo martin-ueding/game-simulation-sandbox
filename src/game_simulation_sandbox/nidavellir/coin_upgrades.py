@@ -4,13 +4,14 @@ import copy
 import itertools
 import json
 import pprint
-import typing
+from typing import Dict
+from typing import List
 
 import anytree
 import tqdm
 
 
-def make_bank(coins: list) -> typing.Dict[int, int]:
+def make_bank(coins: list) -> Dict[int, int]:
     bank = {}
     for value in range(5, 12):
         bank[value] = 3
@@ -24,11 +25,11 @@ def make_bank(coins: list) -> typing.Dict[int, int]:
     return bank
 
 
-def make_begin() -> typing.List[int]:
+def make_begin() -> List[int]:
     return [2, 3, 4, 5]
 
 
-def possible_upgrades(coins: list) -> typing.List[typing.List[int]]:
+def possible_upgrades(coins: list) -> List[List[int]]:
     new_states = []
     bank = make_bank(coins)
     for selected in itertools.combinations(coins, 2):
@@ -44,7 +45,7 @@ def possible_upgrades(coins: list) -> typing.List[typing.List[int]]:
     return new_states
 
 
-def make_name(coins: typing.List[int]) -> str:
+def make_name(coins: List[int]) -> str:
     return ", ".join(map(str, sorted(coins)))
 
 
