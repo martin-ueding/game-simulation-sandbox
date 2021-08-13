@@ -83,7 +83,9 @@ class Environment(py_environment.PyEnvironment):
         if self.round < 8:
             result = ts.transition(self._represent(), 0.0, 1.0)
         else:
-            result = ts.termination(self._represent(), float(sum(self.coins)))
+            score = float(sum(self.coins))
+            print(score, self.coins)
+            result = ts.termination(self._represent(), score)
             self.reset()
         return result
 

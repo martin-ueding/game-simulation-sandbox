@@ -1,5 +1,7 @@
 import asyncio
+import datetime
 import logging
+import os
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import click
@@ -9,8 +11,10 @@ import numpy as np
 import tensorflow as tf
 import tqdm
 from tf_agents.agents.dqn import dqn_agent
+from tf_agents.drivers import dynamic_episode_driver
 from tf_agents.environments import suite_gym
 from tf_agents.environments import tf_py_environment
+from tf_agents.metrics import tf_metrics
 from tf_agents.networks import sequential
 from tf_agents.replay_buffers import tf_uniform_replay_buffer
 from tf_agents.trajectories import trajectory
@@ -22,7 +26,8 @@ logger = logging.getLogger()
 
 
 @click.command()
-def main():
+@click.argument("name")
+def main(name: str):
     coloredlogs.install()
     logger.info("Make environment …")
     train_env = environment.make_tf_environment()
@@ -30,47 +35,50 @@ def main():
     tf_agent = make_tf_agent(train_env)
     logger.info("Make replay buffer …")
     replay_buffer = make_replay_buffer(tf_agent, train_env)
-    collect_episodes_per_iteration = 1
-    batch_size = 128
+    collect_episodes_per_iteration = 5
+    batch_size = 64
     dataset = replay_buffer.as_dataset(
         num_parallel_calls=3, sample_batch_size=batch_size, num_steps=2
     ).prefetch(3)
     iterator = iter(dataset)
-    logger.info("Collect initial episodes …")
-    collect_episode(
+
+    num_iterations = 100
+    logger.info("Start training …")
+
+    train_dir = os.path.join(
+        "train", datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + " " + name
+    )
+    train_summary_writer = tf.summary.create_file_writer(train_dir, flush_millis=10000)
+    train_summary_writer.set_as_default()
+
+    train_metrics = [
+        tf_metrics.NumberOfEpisodes(),
+        tf_metrics.EnvironmentSteps(),
+        tf_metrics.AverageReturnMetric(buffer_size=collect_episodes_per_iteration),
+        tf_metrics.MaxReturnMetric(buffer_size=collect_episodes_per_iteration),
+        tf_metrics.MinReturnMetric(buffer_size=collect_episodes_per_iteration),
+        tf_metrics.ChosenActionHistogram(buffer_size=collect_episodes_per_iteration),
+    ]
+    observers = [
+        replay_buffer.add_batch,
+    ] + train_metrics
+    driver = dynamic_episode_driver.DynamicEpisodeDriver(
         train_env,
         tf_agent.collect_policy,
-        collect_episodes_per_iteration + batch_size,
-        replay_buffer,
+        observers,
+        num_episodes=collect_episodes_per_iteration,
     )
+    # Initial driver.run will reset the environment and initialize the policy.
+    for iteration in tqdm.tqdm(range(num_iterations)):
+        final_time_step, policy_state = driver.run()
 
-    returns = []
-    losses = []
-    weights = []
-    num_iterations = 10000
-    eval_interval = 50
-    num_eval_episodes = 100
-    logger.info("Start training …")
-    for _ in tqdm.tqdm(range(num_iterations)):
-        collect_episode(
-            train_env,
-            tf_agent.collect_policy,
-            collect_episodes_per_iteration,
-            replay_buffer,
-        )
-        experience, unused_info = next(iterator)
-        losses.append(tf_agent.train(experience).loss)
-        step = tf_agent.train_step_counter.numpy()
-
-        if step % eval_interval == 0:
-            avg_return = compute_avg_return(
-                train_env, tf_agent.policy, num_eval_episodes
+        for train_metric in train_metrics:
+            train_metric.tf_summaries(
+                train_step=iteration, step_metrics=train_metrics[:2]
             )
-            returns.append(avg_return)
-            weights.append(tf_agent._q_network.layers[0].get_weights())
 
-            plot_returns(eval_interval, returns)
-            plot_loss(losses)
+        experience, unused_info = next(iterator)
+        trained = tf_agent.train(experience)
 
 
 def make_replay_buffer(tf_agent, train_env):
@@ -94,7 +102,7 @@ def make_tf_agent(train_env):
     q_net = sequential.Sequential(dense_layers)
     learning_rate = 1e-3
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    train_step_counter = tf.Variable(0)
+    train_step_counter = tf.Variable(0, dtype=tf.int64)
     tf_agent = dqn_agent.DqnAgent(
         train_env.time_step_spec(),
         train_env.action_spec(),
@@ -102,6 +110,7 @@ def make_tf_agent(train_env):
         optimizer=optimizer,
         td_errors_loss_fn=common.element_wise_squared_loss,
         train_step_counter=train_step_counter,
+        summarize_grads_and_vars=True,
     )
     tf_agent.initialize()
     summarize_network(q_net)
@@ -177,3 +186,7 @@ def collect_episode(env, policy, num_episodes, replay_buffer):
 
         if traj.is_boundary():
             episode_counter += 1
+
+
+if __name__ == "__main__":
+    main()
