@@ -54,6 +54,7 @@ class Environment(py_environment.PyEnvironment):
         return ts.restart(self._represent())
 
     def _step(self, action) -> ts.TimeStep:
+        assert self.round < 8
         if action == 0:
             keep, old = self.coins[0], self.coins[1]
         elif action == 1:
@@ -79,13 +80,16 @@ class Environment(py_environment.PyEnvironment):
             if old >= 5:
                 self.bank[old] += 1
         self.round += 1
-        if self.round == 8:
-            return ts.termination(self._represent(), float(sum(self.coins)))
-        return ts.transition(self._represent(), 0.0, 1.0)
+        if self.round < 8:
+            result = ts.transition(self._represent(), 0.0, 1.0)
+        else:
+            result = ts.termination(self._represent(), float(sum(self.coins)))
+            self.reset()
+        return result
 
     def _represent(self):
         return np.array(self.coins, dtype=np.int32)
 
 
 def make_tf_environment() -> tf_py_environment.TFPyEnvironment:
-    return tf_py_environment.TFPyEnvironment(Environment(True))
+    return tf_py_environment.TFPyEnvironment(Environment())
