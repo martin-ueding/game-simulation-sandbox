@@ -32,6 +32,7 @@ tf-agents = "^0.7.1"
 coloredlogs = "^15.0.1"
 python-igraph = "^0.9.6"
 PyYAML = "^5.4.1"
+pycairo = "^1.20.1"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

@@ -5,6 +5,7 @@ from typing import *
 
 import igraph
 import yaml
+from tqdm import tqdm
 
 
 def build_undirected_graph(path: pathlib.Path) -> igraph.Graph:
@@ -38,8 +39,26 @@ def set_random_numbers(graph: igraph.Graph) -> None:
     graph.vs["number"] = numbers
 
 
-def get_longest_simple_path(graph: igraph.Graph) -> List[int]:
-    pass
+def get_longest_simple_path(graph: igraph.Graph) -> List[igraph.Vertex]:
+    simple_paths = []
+    for start_vertex in tqdm(graph.vs):
+        stack = [start_vertex]
+        last_pop = None
+        while len(stack) > 0:
+            free_out_edges = [
+                edge
+                for edge in stack[-1].out_edges()
+                if (edge.target_vertex not in stack)
+                and (last_pop is None or edge.target > last_pop.index)
+            ]
+            free_out_edges.sort(key=lambda edge: edge.target)
+            if len(free_out_edges) == 0:
+                simple_paths.append(copy.copy(stack))
+                last_pop = stack.pop()
+            else:
+                stack.append(free_out_edges[0].target_vertex)
+    simple_paths.sort(key=lambda path: len(path), reverse=True)
+    return simple_paths[0]
 
 
 def make_neato() -> None:
