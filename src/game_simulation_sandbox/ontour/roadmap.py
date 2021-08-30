@@ -5,6 +5,7 @@ from typing import *
 
 import igraph
 import yaml
+from game_simulation_sandbox.igraph_util import render_igraph_neato
 from tqdm import tqdm
 
 
@@ -58,7 +59,7 @@ def get_longest_simple_path(graph: igraph.Graph) -> List[igraph.Vertex]:
     return simple_paths[0]
 
 
-def make_neato() -> None:
+def main() -> None:
     this_path = pathlib.Path(__file__)
     data_path = this_path.parent / "data"
     graph_path = data_path / "usa.yml"
@@ -67,11 +68,15 @@ def make_neato() -> None:
     g.vs["label"] = g.vs["name"]
     d = g.as_directed()
     layout = d.layout("kk")
-    igraph.plot(d, layout=layout, target="usa-graph.pdf")
-    get_longest_simple_path(d)
+    # igraph.plot(d, layout=layout, target="usa-graph.pdf")
+    # get_longest_simple_path(d)
+    dot_path = pathlib.Path("usa-neato.dot")
+    print(__name__)
+    g.write_dot(str(dot_path))
+    render_igraph_neato(dot_path)
 
     d.vs["label"] = [
-        f"{name} {number}" for name, number in zip(d.vs["name"], d.vs["number"])
+        f"{name}\n{number}" for name, number in zip(d.vs["name"], d.vs["number"])
     ]
 
     to_delete = []
@@ -80,10 +85,13 @@ def make_neato() -> None:
             to_delete.append(edge)
 
     d.delete_edges(to_delete)
-    igraph.plot(d, layout=layout, target="usa-grap2.pdf")
-    d.write_dot("usa-neato2.dot")
-    igraph.plot(d, layout=layout, target="usa-grap2.pdf")
+    # igraph.plot(d, layout=layout, target="usa-grap2.pdf")
+
+    dot_path = pathlib.Path("usa-neato2.dot")
+    print(__name__)
+    d.write_dot(str(dot_path))
+    render_igraph_neato(dot_path)
 
 
 if __name__ == "__main__":
-    make_neato()
+    main()

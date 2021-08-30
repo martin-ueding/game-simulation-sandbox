@@ -1,8 +1,10 @@
 import itertools
+import pathlib
 import pprint
 from typing import *
 
 import igraph
+from game_simulation_sandbox.igraph_util import render_igraph_neato
 
 Piece = Tuple[int, int, int]
 
@@ -12,7 +14,12 @@ def main() -> None:
     pprint.pprint(pieces)
     print(len(pieces))
     g = make_graph(pieces)
-    igraph.plot(g, layout=g.layout("sphere"), target="tridom.pdf")
+
+    for vertex in sorted(g.vs, key=lambda vertex: vertex.attributes()["numbers"]):
+        print(vertex.attributes()["numbers"], vertex.degree())
+    igraph.plot(g, layout=g.layout("kk"), target="tridom.pdf")
+    g.write_dot("tridom-neato.dot")
+    render_igraph_neato(pathlib.Path("tridom-neato.dot"))
 
 
 def make_all() -> Set[Piece]:
@@ -42,10 +49,11 @@ def can_dock(left: Piece, right: Piece) -> bool:
     a, b, c = left
     x, y, z = right
 
-    left_edges = [(a, b), (b, c), [c, a]]
+    left_edges = [(a, b), (b, c), (c, a)]
     right_edges = [(x, y), (y, z), (z, x)]
     for left_edge in left_edges:
         for right_edge in right_edges:
+            print(left_edge, right_edge)
             if left_edge == right_edge:
                 return True
     return False
@@ -59,9 +67,11 @@ def make_graph(pieces: List[Piece]) -> igraph.Graph:
             name=str(piece), label=f"{piece[0]} {piece[1]} {piece[2]}", numbers=piece
         )
     for i, left in enumerate(pieces):
-        for j, right in enumerate(pieces[i + 1 :]):
-            if can_dock(left, right):
-                g.add_edge(str(left), str(right))
+        for j, right in enumerate(pieces):
+            if can_dock(left, right) and left != right:
+                if not g.are_connected(str(left), str(right)):
+                    g.add_edge(str(left), str(right))
+    g.simplify()
     return g
 
 

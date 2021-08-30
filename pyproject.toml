@@ -21,6 +21,8 @@ gss-scythe = "game_simulation_sandbox.scythe.__main__:main"
 gss-nidavellir-full = "game_simulation_sandbox.nidavellir.coin_upgrades:main"
 gss-nidavellir-qlearn = "game_simulation_sandbox.nidavellir.qlearn:main"
 gss-frozenlake = "game_simulation_sandbox.frozenlake.__main__:main"
+gss-tridom = "game_simulation_sandbox.tridom.pieces:main"
+gss-ontour = "game_simulation_sandbox.ontour.roadmap:main"
 
 [tool.poetry.dependencies]
 python = "3.8.*"
