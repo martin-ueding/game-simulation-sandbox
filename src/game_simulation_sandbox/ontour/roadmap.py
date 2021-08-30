@@ -9,10 +9,7 @@ from tqdm import tqdm
 
 
 def build_undirected_graph(path: pathlib.Path) -> igraph.Graph:
-    this_path = pathlib.Path(__file__)
-    data_path = this_path.parent / "data"
-    graph_path = data_path / "usa.yml"
-    with open(graph_path) as f:
+    with open(path) as f:
         graph_usa = yaml.safe_load(f)
 
     g = igraph.Graph()
@@ -62,12 +59,16 @@ def get_longest_simple_path(graph: igraph.Graph) -> List[igraph.Vertex]:
 
 
 def make_neato() -> None:
+    this_path = pathlib.Path(__file__)
+    data_path = this_path.parent / "data"
+    graph_path = data_path / "usa.yml"
+    g = build_undirected_graph(graph_path)
+    set_random_numbers(g)
     g.vs["label"] = g.vs["name"]
-    print(g)
     d = g.as_directed()
-    print(d)
     layout = d.layout("kk")
     igraph.plot(d, layout=layout, target="usa-graph.pdf")
+    get_longest_simple_path(d)
 
     d.vs["label"] = [
         f"{name} {number}" for name, number in zip(d.vs["name"], d.vs["number"])
