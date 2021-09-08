@@ -2,9 +2,11 @@ import pathlib
 import subprocess
 
 
-def render_igraph_neato(path: pathlib.Path) -> None:
+def render_igraph_neato(path: pathlib.Path, digraph=False) -> None:
     with open(path) as f:
         lines = list(f)
+    if digraph:
+        lines[1] = "digraph {\n"
     lines.insert(2, "splines = true\n")
     lines.insert(2, "overlap = false\n")
     with open(path, "w") as f:
