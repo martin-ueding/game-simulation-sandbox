@@ -16,7 +16,7 @@ def test_remove_padding() -> None:
 
 
 def test_next_state() -> None:
-    initial = np.array([[0, 0, 0], [1, 1, 1], [0, 0, 0]])
-    expected = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+    initial = np.array([[1, 1, 1]])
+    expected = np.array([[1], [1], [1]])
     next = next_state(initial)
     assert np.all(next == expected)

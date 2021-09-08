@@ -5,13 +5,14 @@ import scipy.signal
 
 
 def next_state(state: np.ndarray) -> np.ndarray:
+    state = add_padding(state)
     kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
     neighbors = scipy.signal.convolve2d(state, kernel, mode="same")
     assert np.all(state.shape == neighbors.shape)
     new_state = 1 * ((state == 1) & ((neighbors == 2) | (neighbors == 3))) | (
         (state == 0) & (neighbors == 3)
     )
-    return new_state
+    return remove_padding(new_state)
 
 
 def add_padding(state: np.ndarray) -> np.ndarray:
