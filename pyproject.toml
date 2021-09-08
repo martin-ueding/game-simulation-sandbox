@@ -23,6 +23,7 @@ gss-nidavellir-qlearn = "game_simulation_sandbox.nidavellir.qlearn:main"
 gss-frozenlake = "game_simulation_sandbox.frozenlake.__main__:main"
 gss-tridom = "game_simulation_sandbox.tridom.pieces:main"
 gss-ontour = "game_simulation_sandbox.ontour.roadmap:main"
+gss-game-of-life = "game_simulation_sandbox.gameoflife.__main__:cli"
 
 [tool.poetry.dependencies]
 python = "3.8.*"
