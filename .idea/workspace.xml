@@ -1,69 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="b36c58e9-4cf8-4d35-b797-8fef45fb0d18" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/scythe-simulator.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/loss.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/loss.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/random-scatter.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/random-scores.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/random-steps.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training-01-naive-dense.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training-02-onehot.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training-03-flattened.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training-04-deeper.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training-05-deeper.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training-06-argmax.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/training.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/weights.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogpost/weights.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/random_baseline.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/cartpole/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/collatz_bottom_up.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/frozenlake/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/gameoflife/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/gameoflife/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/gameoflife/test_transition.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/gameoflife/transition.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/igraph_util.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/nidavellir/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/nidavellir/coin_upgrades.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/nidavellir/environment.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/nidavellir/environment_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/nidavellir/mcts.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/nidavellir/qlearn.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ontour/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ontour/data/usa.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ontour/roadmap.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ontour/test_longest_simple_path.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ri2048/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ri2048/environment.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ri2048/game.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/ri2048/simple_strategy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/scythe/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/scythe/actions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/scythe/board.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/scythe/player_mats.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/state_tree.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/tictactoe/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/tictactoe/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/tictactoe/game.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/tictactoe/test_game.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/tridom/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/tridom/pieces.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game_simulation_sandbox/tridom/test_pieces.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles.py" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -77,6 +35,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
