@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 # ##### Copyright 2021 The TF-Agents Authors.
-
 # In[1]:
-
-
 # @title Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,8 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 # # Train a Deep Q Network with TF-Agents
 #
 # <table class="tfo-notebook-buttons" align="left">
@@ -41,10 +35,8 @@
 #     <a href="https://storage.googleapis.com/tensorflow_docs/agents/docs/tutorials/1_dqn_tutorial.ipynb"><img src="https://www.tensorflow.org/images/download_logo_32px.png" />Download notebook</a>
 #   </td>
 # </table>
-
 # ## Introduction
 #
-
 # This example shows how to train a [DQN (Deep Q Networks)](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)  agent on the Cartpole environment using the TF-Agents library.
 #
 # ![Cartpole environment](https://raw.githubusercontent.com/tensorflow/agents/master/docs/tutorials/images/cartpole.png)
@@ -54,24 +46,16 @@
 #
 # To run this code live, click the 'Run in Google Colab' link above.
 #
-
 # ## Setup
-
 # If you haven't installed the following dependencies, run:
-
 # In[2]:
-
-
 # In[3]:
-
-
 import base64
+
 import matplotlib
 import matplotlib.pyplot as pl
 import numpy as np
-
 import tensorflow as tf
-
 from tf_agents.agents.dqn import dqn_agent
 from tf_agents.environments import suite_gym
 from tf_agents.environments import tf_py_environment
@@ -80,8 +64,8 @@ from tf_agents.metrics import tf_metrics
 from tf_agents.networks import sequential
 from tf_agents.policies import random_tf_policy
 from tf_agents.replay_buffers import tf_uniform_replay_buffer
-from tf_agents.trajectories import trajectory
 from tf_agents.specs import tensor_spec
+from tf_agents.trajectories import trajectory
 from tf_agents.utils import common
 
 

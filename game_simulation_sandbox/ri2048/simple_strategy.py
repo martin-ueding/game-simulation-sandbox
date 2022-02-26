@@ -1,6 +1,6 @@
+import matplotlib.pyplot as pl
 import numpy as np
 import tqdm
-import matplotlib.pyplot as pl
 
 from . import game
 

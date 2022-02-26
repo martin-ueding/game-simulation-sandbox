@@ -2,9 +2,8 @@ import copy
 import pprint
 
 import tqdm
-
-from gss.scythe import player_mats
 from gss import state_tree
+from gss.scythe import player_mats
 
 initial_state = {
     "popularity": 3,

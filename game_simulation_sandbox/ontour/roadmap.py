@@ -5,8 +5,9 @@ from typing import *
 
 import igraph
 import yaml
-from game_simulation_sandbox.igraph_util import render_igraph_neato
 from tqdm import tqdm
+
+from game_simulation_sandbox.igraph_util import render_igraph_neato
 
 
 def build_undirected_graph(path: pathlib.Path) -> igraph.Graph:

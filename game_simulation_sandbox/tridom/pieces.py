@@ -4,6 +4,7 @@ import pprint
 from typing import *
 
 import igraph
+
 from game_simulation_sandbox.igraph_util import render_igraph_neato
 
 Piece = Tuple[int, int, int]

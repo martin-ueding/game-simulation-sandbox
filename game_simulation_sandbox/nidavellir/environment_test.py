@@ -1,5 +1,6 @@
-from game_simulation_sandbox.nidavellir.environment import Environment
 from tf_agents.environments import utils
+
+from game_simulation_sandbox.nidavellir.environment import Environment
 
 
 def test_validate_environment():
