@@ -1,8 +1,12 @@
 import dataclasses
 import enum
+import pathlib
 from typing import List
 from typing import Optional
 from typing import Tuple
+
+import numpy as np
+import PIL.Image
 
 
 class Direction(enum.Enum):
@@ -42,15 +46,17 @@ class Tile:
     def __init__(
         self,
         name: str,
-        image: str,
         connections: List[List[Tuple[Direction, TransportType]]],
+        image: Optional[np.ndarray] = None,
     ):
         self.name = name
-        self.image = image.split("\n")
+        if image is not None:
+            self.image = image
+        else:
+            self.image = np.array(
+                PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / f"{name}.png")
+            )
         self.connections = connections
-
-        assert len(self.image) == 5
-        assert all(len(row) == 5 for row in self.image)
 
     def fits(
         self,
@@ -86,12 +92,7 @@ class Tile:
 
 
 def rotate_tile(tile: Tile) -> Tile:
-    pixels = [list(row) for row in tile.image]
-    new_pixels = [[""] * 5 for i in range(5)]
-    for i in range(5):
-        for j in range(5):
-            new_pixels[j][4 - i] = pixels[i][j]
-    new_image = ["".join(row) for row in new_pixels]
+    new_pixels = np.rot90(tile.image)
 
     new_connections = []
     for connection in tile.connections:
@@ -100,33 +101,28 @@ def rotate_tile(tile: Tile) -> Tile:
             new_connection.append((rotate_direction[direction], transport_type))
         new_connections.append(new_connection)
 
-    return Tile(tile.name, "\n".join(new_image), new_connections)
+    return Tile(tile.name, new_connections, new_pixels)
 
 
 unique_tiles = [
     Tile(
         "straight rail",
-        "     \n     \n+++++\n     \n     ",
         [[(Direction.LEFT, TransportType.RAIL), (Direction.RIGHT, TransportType.RAIL)]],
     ),
     Tile(
         "straight road",
-        "     \n     \n.....\n     \n     ",
         [[(Direction.LEFT, TransportType.ROAD), (Direction.RIGHT, TransportType.ROAD)]],
     ),
     Tile(
         "curve road",
-        "     \n     \n...  \n  .  \n  .  ",
         [[(Direction.LEFT, TransportType.ROAD), (Direction.DOWN, TransportType.ROAD)]],
     ),
     Tile(
         "curve rail",
-        "     \n     \n+++  \n  +  \n  +  ",
         [[(Direction.LEFT, TransportType.RAIL), (Direction.DOWN, TransportType.RAIL)]],
     ),
     Tile(
         "T road",
-        "     \n     \n.....\n  .  \n  .  ",
         [
             [
                 (Direction.LEFT, TransportType.ROAD),
@@ -137,7 +133,6 @@ unique_tiles = [
     ),
     Tile(
         "T rail",
-        "     \n     \n+++++\n  +  \n  +  ",
         [
             [
                 (Direction.LEFT, TransportType.RAIL),
@@ -148,22 +143,18 @@ unique_tiles = [
     ),
     Tile(
         "curve station 1",
-        "     \n     \n++#  \n  .  \n  .  ",
         [[(Direction.LEFT, TransportType.RAIL), (Direction.DOWN, TransportType.ROAD)]],
     ),
     Tile(
         "curve station 2",
-        "     \n     \n..#  \n  +  \n  +  ",
         [[(Direction.LEFT, TransportType.ROAD), (Direction.DOWN, TransportType.RAIL)]],
     ),
     Tile(
         "straight station",
-        "     \n     \n..#++\n     \n     ",
         [[(Direction.LEFT, TransportType.ROAD), (Direction.RIGHT, TransportType.RAIL)]],
     ),
     Tile(
         "T road station",
-        "     \n     \n..#..\n  +  \n  +  ",
         [
             [
                 (Direction.LEFT, TransportType.ROAD),
@@ -174,7 +165,6 @@ unique_tiles = [
     ),
     Tile(
         "T rail station",
-        "     \n     \n++#++\n  .  \n  .  ",
         [
             [
                 (Direction.LEFT, TransportType.RAIL),
@@ -185,17 +175,14 @@ unique_tiles = [
     ),
     Tile(
         "cul-de-sac road",
-        "     \n     \n..#  \n     \n     ",
         [[(Direction.LEFT, TransportType.ROAD)]],
     ),
     Tile(
         "cul-de-sac rail",
-        "     \n     \n++#  \n     \n     ",
         [[(Direction.LEFT, TransportType.RAIL)]],
     ),
     Tile(
         "overpass",
-        "  .  \n  .  \n++.++\n  .  \n  .  ",
         [
             [
                 (Direction.LEFT, TransportType.RAIL),
@@ -206,7 +193,6 @@ unique_tiles = [
     ),
     Tile(
         "double road",
-        "  .  \n .   \n.   .\n   . \n  .  ",
         [
             [(Direction.LEFT, TransportType.ROAD), (Direction.UP, TransportType.ROAD)],
             [
@@ -217,7 +203,6 @@ unique_tiles = [
     ),
     Tile(
         "double rail",
-        "  +  \n +   \n+   +\n   + \n  +  ",
         [
             [(Direction.LEFT, TransportType.RAIL), (Direction.UP, TransportType.RAIL)],
             [
@@ -231,12 +216,10 @@ unique_tiles = [
 available_tiles = []
 for tile in unique_tiles:
     for i in range(4):
-        if tile.image not in [t.image for t in available_tiles]:
+        if not any([np.all(tile.image == t.image) for t in available_tiles]):
             available_tiles.append(tile)
         tile = rotate_tile(tile)
 
 
 for tile in available_tiles:
     print(tile.name, tile.connections)
-    for line in tile.image:
-        print(line)

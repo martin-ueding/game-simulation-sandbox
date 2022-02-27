@@ -1,5 +1,9 @@
+import pathlib
 from typing import List
 from typing import Optional
+
+import numpy as np
+import PIL
 
 from .tiles import available_tiles
 from .tiles import Direction
@@ -16,21 +20,19 @@ for i in range(board_size):
 
 exit_rail_right = Tile(
     "exit rail",
-    "     \n     \n  #++\n     \n     ",
     [[(Direction.RIGHT, TransportType.RAIL)]],
 )
-exit_rail_down = rotate_tile(exit_rail_right)
-exit_rail_left = rotate_tile(exit_rail_down)
-exit_rail_up = rotate_tile(exit_rail_left)
+exit_rail_up = rotate_tile(exit_rail_right)
+exit_rail_left = rotate_tile(exit_rail_up)
+exit_rail_down = rotate_tile(exit_rail_left)
 
 exit_road_right = Tile(
     "exit road",
-    "     \n     \n  #..\n     \n     ",
     [[(Direction.RIGHT, TransportType.ROAD)]],
 )
-exit_road_down = rotate_tile(exit_road_right)
-exit_road_left = rotate_tile(exit_road_down)
-exit_road_up = rotate_tile(exit_road_left)
+exit_road_up = rotate_tile(exit_road_right)
+exit_road_left = rotate_tile(exit_road_up)
+exit_road_down = rotate_tile(exit_road_left)
 
 
 board[2][0] = exit_rail_right
@@ -48,29 +50,38 @@ board[-1][2] = exit_road_up
 board[-1][4] = exit_rail_up
 board[-1][6] = exit_road_up
 
-steps = 2
+
+img_board = np.zeros((board_size * 100, board_size * 100, 4), np.uint8)
+img_empty = np.array(
+    PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "empty.png")
+)
+img_empty_tile = np.array(
+    PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "empty tile.png")
+)
+
+for i in range(board_size):
+    for j in range(board_size):
+        if board[i][j] is None:
+            if i == 0 or j == 0 or i == board_size - 1 or j == board_size - 1:
+                img = img_empty
+            else:
+                img = img_empty_tile
+        else:
+            img = board[i][j].image
+        img_board[i * 100 : (i + 1) * 100, j * 100 : (j + 1) * 100] = img
+
+
+steps = 0
 
 
 def print_board():
-    result = []
-    for i in range(board_size * 5):
-        result.append([])
-
-    for i in range(board_size):
-        for j in range(board_size):
-            for k in range(5):
-                tile = board[i][j]
-                row = tile.image[k] if tile else "     "
-                result[i * 5 + k].append(row)
-
-    print("@")
-    for row in result:
-        print("".join(row))
-
     global steps
-    if steps < 0:
+    pil_image = PIL.Image.fromarray(img_board)
+    pil_image.save(f"test-{steps:06d}.png", "PNG")
+
+    if steps >= 0:
         raise RuntimeError()
-    steps -= 1
+    steps += 1
 
 
 def do_step():
