@@ -4,6 +4,7 @@ from typing import Optional
 from .tiles import available_tiles
 from .tiles import Direction
 from .tiles import FitType
+from .tiles import rotate_tile
 from .tiles import Tile
 from .tiles import TransportType
 
@@ -13,55 +14,41 @@ for i in range(board_size):
     board.append([None] * board_size)
 
 
-board[2][0] = Tile(
+exit_rail_right = Tile(
     "exit rail",
     "     \n     \n  #++\n     \n     ",
     [[(Direction.RIGHT, TransportType.RAIL)]],
 )
-board[4][0] = Tile(
+exit_rail_down = rotate_tile(exit_rail_right)
+exit_rail_left = rotate_tile(exit_rail_down)
+exit_rail_up = rotate_tile(exit_rail_left)
+
+exit_road_right = Tile(
     "exit road",
     "     \n     \n  #..\n     \n     ",
     [[(Direction.RIGHT, TransportType.ROAD)]],
 )
-board[6][0] = board[2][0]
+exit_road_down = rotate_tile(exit_road_right)
+exit_road_left = rotate_tile(exit_road_down)
+exit_road_up = rotate_tile(exit_road_left)
 
-board[0][2] = Tile(
-    "exit road",
-    "     \n     \n  #  \n  .  \n  .  ",
-    [[(Direction.DOWN, TransportType.ROAD)]],
-)
-board[0][4] = Tile(
-    "exit rail",
-    "     \n     \n  #  \n  +  \n  +  ",
-    [[(Direction.DOWN, TransportType.RAIL)]],
-)
-board[0][6] = board[0][2]
 
-board[2][-1] = Tile(
-    "exit rail",
-    "     \n     \n++#  \n     \n     ",
-    [[(Direction.LEFT, TransportType.RAIL)]],
-)
-board[4][-1] = Tile(
-    "exit road",
-    "     \n     \n..#  \n     \n     ",
-    [[(Direction.LEFT, TransportType.ROAD)]],
-)
-board[6][-1] = board[2][-1]
+board[2][0] = exit_rail_right
+board[4][0] = exit_road_right
+board[6][0] = exit_rail_right
 
-board[-1][2] = Tile(
-    "exit road",
-    "  .  \n  .  \n  #  \n     \n     ",
-    [[(Direction.UP, TransportType.ROAD)]],
-)
-board[-1][4] = Tile(
-    "exit rail",
-    "  +  \n  +  \n  #  \n     \n     ",
-    [[(Direction.UP, TransportType.RAIL)]],
-)
-board[-1][6] = board[-1][2]
+board[0][2] = exit_rail_down
+board[0][6] = exit_road_down
 
-steps = 100
+board[2][-1] = exit_rail_left
+board[4][-1] = exit_road_left
+board[6][-1] = exit_rail_left
+
+board[-1][2] = exit_road_up
+board[-1][4] = exit_rail_up
+board[-1][6] = exit_road_up
+
+steps = 2
 
 
 def print_board():
@@ -87,7 +74,6 @@ def print_board():
 
 
 def do_step():
-    print_board()
     for tile in available_tiles:
         for i in range(1, board_size - 1):
             for j in range(1, board_size - 1):
@@ -105,8 +91,10 @@ def do_step():
                     fit == FitType.MATCHES for fit in fits
                 ):
                     board[i][j] = tile
+                    print_board()
                     do_step()
                     board[i][j] = None
+                    print_board()
 
 
 def main():
