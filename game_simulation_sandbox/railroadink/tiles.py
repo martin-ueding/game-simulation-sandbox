@@ -78,7 +78,33 @@ class Tile:
         return self.name
 
 
-available_tiles = [
+rotate_direction = {
+    Direction.UP: Direction.RIGHT,
+    Direction.RIGHT: Direction.DOWN,
+    Direction.DOWN: Direction.LEFT,
+    Direction.LEFT: Direction.UP,
+}
+
+
+def rotate_tile(tile: Tile) -> Tile:
+    pixels = [list(row) for row in tile.image]
+    new_pixels = [[""] * 5 for i in range(5)]
+    for i in range(5):
+        for j in range(5):
+            new_pixels[i][j] = pixels[j][4 - i]
+    new_image = ["".join(row) for row in new_pixels]
+
+    new_connections = []
+    for connection in tile.connections:
+        new_connection = []
+        for direction, transport_type in connection:
+            new_connection.append((rotate_direction[direction], transport_type))
+        new_connections.append(new_connection)
+
+    return Tile(tile.name, "\n".join(new_image), new_connections)
+
+
+unique_tiles = [
     Tile(
         "straight rail",
         "     \n     \n+++++\n     \n     ",
@@ -90,3 +116,14 @@ available_tiles = [
         [[(Direction.LEFT, TransportType.ROAD), (Direction.RIGHT, TransportType.ROAD)]],
     ),
 ]
+
+available_tiles = []
+for tile in unique_tiles:
+    for i in range(4):
+        if tile.image not in [t.image for t in available_tiles]:
+            available_tiles.append(tile)
+        tile = rotate_tile(tile)
+
+
+for tile in available_tiles:
+    print(tile.name)

@@ -18,6 +18,12 @@ board[2][0] = Tile(
     [[(Direction.RIGHT, TransportType.RAIL)]],
 )
 
+board[0][2] = Tile(
+    "exit rail",
+    "     \n     \n  #  \n  +  \n  +  ",
+    [[(Direction.DOWN, TransportType.RAIL)]],
+)
+
 
 steps = 10
 
