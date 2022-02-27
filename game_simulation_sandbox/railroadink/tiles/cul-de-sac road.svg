@@ -8,8 +8,8 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
-   sodipodi:docname="double road.svg"
-   inkscape:export-filename="/home/mu/Projekte/game-simulation-sandbox/game_simulation_sandbox/railroadink/tiles/double road.png"
+   sodipodi:docname="cul-de-sac road.svg"
+   inkscape:export-filename="/home/mu/Projekte/game-simulation-sandbox/game_simulation_sandbox/railroadink/tiles/straight road.png"
    inkscape:export-xdpi="89.335999"
    inkscape:export-ydpi="89.335999"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -30,9 +30,9 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="6.4907799"
-     inkscape:cx="26.576159"
-     inkscape:cy="47.991151"
+     inkscape:zoom="9.179349"
+     inkscape:cx="84.156295"
+     inkscape:cy="56.485487"
      inkscape:window-width="1920"
      inkscape:window-height="1025"
      inkscape:window-x="0"
@@ -47,34 +47,19 @@
      id="layer1"
      transform="translate(-83.323602,-101.77081)">
     <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none;stroke-opacity:1"
+       d="m 83.538496,113.62255 16.813634,0"
+       id="path164"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none;stroke-opacity:1"
+       d="m 83.497733,118.35105 15.343626,0"
+       id="path246"
+       sodipodi:nodetypes="cc" />
+    <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:2, 2;stroke-dashoffset:0.9;stroke-opacity:1"
-       d="m 83.45697,115.98679 c 10.073842,0.0404 14.011816,-3.86008 14.082635,-14.08262"
+       d="m 83.45697,115.98679 16.87129,0"
        id="path248"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 83.538496,113.62255 c 8.484317,-0.0279 11.553598,-3.00711 11.636849,-11.67761"
-       id="path252"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 83.497733,118.35105 c 11.614045,-0.0174 16.396673,-4.67436 16.406112,-16.36535"
-       id="path254"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 111.58146,118.35105 c -8.01295,0.0934 -11.687735,3.71133 -11.677615,11.71837"
-       id="path256"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 111.62222,113.62255 c -12.239064,0.0274 -16.463869,6.50878 -16.446875,16.40611"
-       id="path258"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:2, 2;stroke-dashoffset:0.9;stroke-opacity:1"
-       d="M 111.5407,115.98679 C 99.771568,115.70924 97.392748,122.44568 97.539605,129.9879"
-       id="path583"
        sodipodi:nodetypes="cc" />
     <rect
        style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none"
@@ -83,5 +68,12 @@
        height="28.131987"
        x="83.473602"
        y="101.92081" />
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:0.600001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.5"
+       id="rect32"
+       width="6.7447596"
+       height="6.7447596"
+       x="94.167213"
+       y="112.61442" />
   </g>
 </svg>
