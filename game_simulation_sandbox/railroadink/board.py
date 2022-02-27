@@ -7,25 +7,61 @@ from .tiles import FitType
 from .tiles import Tile
 from .tiles import TransportType
 
-board_size = 5
+board_size = 9
 board: List[List[Optional[Tile]]] = []
 for i in range(board_size):
     board.append([None] * board_size)
+
 
 board[2][0] = Tile(
     "exit rail",
     "     \n     \n  #++\n     \n     ",
     [[(Direction.RIGHT, TransportType.RAIL)]],
 )
+board[4][0] = Tile(
+    "exit road",
+    "     \n     \n  #..\n     \n     ",
+    [[(Direction.RIGHT, TransportType.ROAD)]],
+)
+board[6][0] = board[2][0]
 
 board[0][2] = Tile(
+    "exit road",
+    "     \n     \n  #  \n  .  \n  .  ",
+    [[(Direction.DOWN, TransportType.ROAD)]],
+)
+board[0][4] = Tile(
     "exit rail",
     "     \n     \n  #  \n  +  \n  +  ",
     [[(Direction.DOWN, TransportType.RAIL)]],
 )
+board[0][6] = board[0][2]
 
+board[2][-1] = Tile(
+    "exit rail",
+    "     \n     \n++#  \n     \n     ",
+    [[(Direction.LEFT, TransportType.RAIL)]],
+)
+board[4][-1] = Tile(
+    "exit road",
+    "     \n     \n..#  \n     \n     ",
+    [[(Direction.LEFT, TransportType.ROAD)]],
+)
+board[6][-1] = board[2][-1]
 
-steps = 10
+board[-1][2] = Tile(
+    "exit road",
+    "  .  \n  .  \n  #  \n     \n     ",
+    [[(Direction.UP, TransportType.ROAD)]],
+)
+board[-1][4] = Tile(
+    "exit rail",
+    "  +  \n  +  \n  #  \n     \n     ",
+    [[(Direction.UP, TransportType.RAIL)]],
+)
+board[-1][6] = board[-1][2]
+
+steps = 100
 
 
 def print_board():

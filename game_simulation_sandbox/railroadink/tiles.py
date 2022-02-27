@@ -90,7 +90,7 @@ def rotate_tile(tile: Tile) -> Tile:
     new_pixels = [[""] * 5 for i in range(5)]
     for i in range(5):
         for j in range(5):
-            new_pixels[i][j] = pixels[j][4 - i]
+            new_pixels[j][4 - i] = pixels[i][j]
     new_image = ["".join(row) for row in new_pixels]
 
     new_connections = []
@@ -114,6 +114,118 @@ unique_tiles = [
         "     \n     \n.....\n     \n     ",
         [[(Direction.LEFT, TransportType.ROAD), (Direction.RIGHT, TransportType.ROAD)]],
     ),
+    Tile(
+        "curve road",
+        "     \n     \n...  \n  .  \n  .  ",
+        [[(Direction.LEFT, TransportType.ROAD), (Direction.DOWN, TransportType.ROAD)]],
+    ),
+    Tile(
+        "curve rail",
+        "     \n     \n+++  \n  +  \n  +  ",
+        [[(Direction.LEFT, TransportType.RAIL), (Direction.DOWN, TransportType.RAIL)]],
+    ),
+    Tile(
+        "T road",
+        "     \n     \n.....\n  .  \n  .  ",
+        [
+            [
+                (Direction.LEFT, TransportType.ROAD),
+                (Direction.RIGHT, TransportType.ROAD),
+                (Direction.DOWN, TransportType.ROAD),
+            ]
+        ],
+    ),
+    Tile(
+        "T rail",
+        "     \n     \n+++++\n  +  \n  +  ",
+        [
+            [
+                (Direction.LEFT, TransportType.RAIL),
+                (Direction.RIGHT, TransportType.RAIL),
+                (Direction.DOWN, TransportType.RAIL),
+            ]
+        ],
+    ),
+    Tile(
+        "curve station 1",
+        "     \n     \n++#  \n  .  \n  .  ",
+        [[(Direction.LEFT, TransportType.RAIL), (Direction.DOWN, TransportType.ROAD)]],
+    ),
+    Tile(
+        "curve station 2",
+        "     \n     \n..#  \n  +  \n  +  ",
+        [[(Direction.LEFT, TransportType.ROAD), (Direction.DOWN, TransportType.RAIL)]],
+    ),
+    Tile(
+        "straight station",
+        "     \n     \n..#++\n     \n     ",
+        [[(Direction.LEFT, TransportType.ROAD), (Direction.RIGHT, TransportType.RAIL)]],
+    ),
+    Tile(
+        "T road station",
+        "     \n     \n..#..\n  +  \n  +  ",
+        [
+            [
+                (Direction.LEFT, TransportType.ROAD),
+                (Direction.RIGHT, TransportType.ROAD),
+                (Direction.DOWN, TransportType.RAIL),
+            ]
+        ],
+    ),
+    Tile(
+        "T rail station",
+        "     \n     \n++#++\n  .  \n  .  ",
+        [
+            [
+                (Direction.LEFT, TransportType.RAIL),
+                (Direction.RIGHT, TransportType.RAIL),
+                (Direction.DOWN, TransportType.ROAD),
+            ]
+        ],
+    ),
+    Tile(
+        "cul-de-sac road",
+        "     \n     \n..#  \n     \n     ",
+        [[(Direction.LEFT, TransportType.ROAD)]],
+    ),
+    Tile(
+        "cul-de-sac rail",
+        "     \n     \n++#  \n     \n     ",
+        [[(Direction.LEFT, TransportType.RAIL)]],
+    ),
+    Tile(
+        "overpass",
+        "  .  \n  .  \n++.++\n  .  \n  .  ",
+        [
+            [
+                (Direction.LEFT, TransportType.RAIL),
+                (Direction.RIGHT, TransportType.RAIL),
+            ],
+            [(Direction.UP, TransportType.ROAD), (Direction.DOWN, TransportType.ROAD)],
+        ],
+    ),
+    Tile(
+        "double road",
+        "  .  \n .   \n.   .\n   . \n  .  ",
+        [
+            [(Direction.LEFT, TransportType.ROAD), (Direction.UP, TransportType.ROAD)],
+            [
+                (Direction.RIGHT, TransportType.ROAD),
+                (Direction.DOWN, TransportType.ROAD),
+            ],
+        ],
+    ),
+    Tile(
+        "double rail",
+        "  +  \n +   \n+   +\n   + \n  +  ",
+        [
+            [(Direction.LEFT, TransportType.RAIL), (Direction.UP, TransportType.RAIL)],
+            [
+                (Direction.RIGHT, TransportType.RAIL),
+                (Direction.DOWN, TransportType.RAIL),
+            ],
+        ],
+    ),
 ]
 
 available_tiles = []
@@ -125,4 +237,6 @@ for tile in unique_tiles:
 
 
 for tile in available_tiles:
-    print(tile.name)
+    print(tile.name, tile.connections)
+    for line in tile.image:
+        print(line)
