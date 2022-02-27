@@ -1,6 +1,7 @@
 import dataclasses
 import enum
 import pathlib
+import random
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -56,7 +57,8 @@ class Tile:
             self.image = np.array(
                 PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / f"{name}.png")
             )
-        self.connections = connections
+        self.connections = [set(x) for x in connections]
+        self.connections.sort()
 
     def fits(
         self,
@@ -92,7 +94,7 @@ class Tile:
 
 
 def rotate_tile(tile: Tile) -> Tile:
-    new_pixels = np.rot90(tile.image)
+    new_pixels = np.rot90(tile.image, -1)
 
     new_connections = []
     for connection in tile.connections:
@@ -104,7 +106,7 @@ def rotate_tile(tile: Tile) -> Tile:
     return Tile(tile.name, new_connections, new_pixels)
 
 
-unique_tiles = [
+unique_tiles_twofold = [
     Tile(
         "straight rail",
         [[(Direction.LEFT, TransportType.RAIL), (Direction.RIGHT, TransportType.RAIL)]],
@@ -113,6 +115,39 @@ unique_tiles = [
         "straight road",
         [[(Direction.LEFT, TransportType.ROAD), (Direction.RIGHT, TransportType.ROAD)]],
     ),
+    Tile(
+        "overpass",
+        [
+            [
+                (Direction.LEFT, TransportType.RAIL),
+                (Direction.RIGHT, TransportType.RAIL),
+            ],
+            [(Direction.UP, TransportType.ROAD), (Direction.DOWN, TransportType.ROAD)],
+        ],
+    ),
+    Tile(
+        "double road",
+        [
+            [(Direction.LEFT, TransportType.ROAD), (Direction.UP, TransportType.ROAD)],
+            [
+                (Direction.RIGHT, TransportType.ROAD),
+                (Direction.DOWN, TransportType.ROAD),
+            ],
+        ],
+    ),
+    Tile(
+        "double rail",
+        [
+            [(Direction.LEFT, TransportType.RAIL), (Direction.UP, TransportType.RAIL)],
+            [
+                (Direction.RIGHT, TransportType.RAIL),
+                (Direction.DOWN, TransportType.RAIL),
+            ],
+        ],
+    ),
+]
+
+unique_tiles_fourfold = [
     Tile(
         "curve road",
         [[(Direction.LEFT, TransportType.ROAD), (Direction.DOWN, TransportType.ROAD)]],
@@ -181,45 +216,20 @@ unique_tiles = [
         "cul-de-sac rail",
         [[(Direction.LEFT, TransportType.RAIL)]],
     ),
-    Tile(
-        "overpass",
-        [
-            [
-                (Direction.LEFT, TransportType.RAIL),
-                (Direction.RIGHT, TransportType.RAIL),
-            ],
-            [(Direction.UP, TransportType.ROAD), (Direction.DOWN, TransportType.ROAD)],
-        ],
-    ),
-    Tile(
-        "double road",
-        [
-            [(Direction.LEFT, TransportType.ROAD), (Direction.UP, TransportType.ROAD)],
-            [
-                (Direction.RIGHT, TransportType.ROAD),
-                (Direction.DOWN, TransportType.ROAD),
-            ],
-        ],
-    ),
-    Tile(
-        "double rail",
-        [
-            [(Direction.LEFT, TransportType.RAIL), (Direction.UP, TransportType.RAIL)],
-            [
-                (Direction.RIGHT, TransportType.RAIL),
-                (Direction.DOWN, TransportType.RAIL),
-            ],
-        ],
-    ),
 ]
 
 available_tiles = []
-for tile in unique_tiles:
+for tile in unique_tiles_twofold:
+    for i in range(2):
+        available_tiles.append(tile)
+        tile = rotate_tile(tile)
+for tile in unique_tiles_fourfold:
     for i in range(4):
-        if not any([np.all(tile.image == t.image) for t in available_tiles]):
-            available_tiles.append(tile)
+        available_tiles.append(tile)
         tile = rotate_tile(tile)
 
 
 for tile in available_tiles:
-    print(tile.name, tile.connections)
+    print(tile.name)
+
+random.shuffle(available_tiles)

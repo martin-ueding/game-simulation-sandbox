@@ -39,7 +39,8 @@ board[2][0] = exit_rail_right
 board[4][0] = exit_road_right
 board[6][0] = exit_rail_right
 
-board[0][2] = exit_rail_down
+board[0][2] = exit_road_down
+board[0][4] = exit_rail_down
 board[0][6] = exit_road_down
 
 board[2][-1] = exit_rail_left
@@ -51,10 +52,8 @@ board[-1][4] = exit_rail_up
 board[-1][6] = exit_road_up
 
 
-img_board = np.zeros((board_size * 100, board_size * 100, 4), np.uint8)
-img_empty = np.array(
-    PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "empty.png")
-)
+img_board = np.zeros((board_size * 100, board_size * 100), np.uint8)
+img_empty = np.ones((100, 100), np.uint8) * 255
 img_empty_tile = np.array(
     PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "empty tile.png")
 )
@@ -77,9 +76,9 @@ steps = 0
 def print_board():
     global steps
     pil_image = PIL.Image.fromarray(img_board)
-    pil_image.save(f"test-{steps:06d}.png", "PNG")
+    pil_image.save(f"railroad/{steps:06d}.png", "PNG")
 
-    if steps >= 0:
+    if steps >= 1000:
         raise RuntimeError()
     steps += 1
 
@@ -102,9 +101,15 @@ def do_step():
                     fit == FitType.MATCHES for fit in fits
                 ):
                     board[i][j] = tile
+                    img_board[
+                        i * 100 : (i + 1) * 100, j * 100 : (j + 1) * 100
+                    ] = tile.image
                     print_board()
                     do_step()
                     board[i][j] = None
+                    img_board[
+                        i * 100 : (i + 1) * 100, j * 100 : (j + 1) * 100
+                    ] = img_empty_tile
                     print_board()
 
 
