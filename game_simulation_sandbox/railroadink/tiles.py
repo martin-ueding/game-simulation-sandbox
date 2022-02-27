@@ -19,6 +19,13 @@ opposite_directions = {
     Direction.LEFT: Direction.RIGHT,
 }
 
+rotate_direction = {
+    Direction.UP: Direction.RIGHT,
+    Direction.RIGHT: Direction.DOWN,
+    Direction.DOWN: Direction.LEFT,
+    Direction.LEFT: Direction.UP,
+}
+
 
 class TransportType(enum.Enum):
     RAIL = 1
@@ -76,14 +83,6 @@ class Tile:
 
     def __str__(self) -> str:
         return self.name
-
-
-rotate_direction = {
-    Direction.UP: Direction.RIGHT,
-    Direction.RIGHT: Direction.DOWN,
-    Direction.DOWN: Direction.LEFT,
-    Direction.LEFT: Direction.UP,
-}
 
 
 def rotate_tile(tile: Tile) -> Tile:
