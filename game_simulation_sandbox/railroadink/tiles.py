@@ -59,6 +59,7 @@ class Tile:
             )
         self.connections = [set(x) for x in connections]
         self.connections.sort()
+        self.open = set(y for x in connections for y in x)
 
     def fits(
         self,
@@ -90,7 +91,7 @@ class Tile:
         return result
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.name} ({self.open})"
 
 
 def rotate_tile(tile: Tile) -> Tile:
@@ -178,7 +179,7 @@ unique_tiles_fourfold = [
     ),
     Tile(
         "curve station 1",
-        [[(Direction.LEFT, TransportType.RAIL), (Direction.DOWN, TransportType.ROAD)]],
+        [[(Direction.LEFT, TransportType.ROAD), (Direction.UP, TransportType.RAIL)]],
     ),
     Tile(
         "curve station 2",
@@ -230,6 +231,6 @@ for tile in unique_tiles_fourfold:
 
 
 for tile in available_tiles:
-    print(tile.name)
+    print(tile)
 
 random.shuffle(available_tiles)

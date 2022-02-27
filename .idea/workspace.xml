@@ -8,27 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/board.py" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles.py" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T rail station.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T rail station.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T rail.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T rail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T road station.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T road station.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T road.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/T road.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/cul-de-sac rail.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/cul-de-sac rail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/cul-de-sac road.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/cul-de-sac road.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve rail.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve rail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve road.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve road.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve station 1.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve station 1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve station 2.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/curve station 2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/double rail.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/double rail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/double road.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/double road.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/empty tile.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/empty tile.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/empty.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/empty.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/exit rail.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/exit rail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/exit road.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/exit road.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/overpass.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/overpass.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/overpass.svg" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/overpass.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/straight rail.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/straight rail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/straight road.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/straight road.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/straight station.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_simulation_sandbox/railroadink/tiles/straight station.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +40,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -75,5 +56,8 @@
       <updated>1645899058499</updated>
     </task>
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>
