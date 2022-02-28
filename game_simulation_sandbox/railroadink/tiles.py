@@ -234,3 +234,20 @@ for tile in available_tiles:
     print(tile)
 
 random.shuffle(available_tiles)
+
+
+exit_rail_right = Tile(
+    "exit rail",
+    [[(Direction.RIGHT, TransportType.RAIL)]],
+)
+exit_rail_up = rotate_tile(exit_rail_right)
+exit_rail_left = rotate_tile(exit_rail_up)
+exit_rail_down = rotate_tile(exit_rail_left)
+
+exit_road_right = Tile(
+    "exit road",
+    [[(Direction.RIGHT, TransportType.ROAD)]],
+)
+exit_road_up = rotate_tile(exit_road_right)
+exit_road_left = rotate_tile(exit_road_up)
+exit_road_down = rotate_tile(exit_road_left)
