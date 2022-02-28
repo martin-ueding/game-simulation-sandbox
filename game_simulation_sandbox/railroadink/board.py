@@ -103,35 +103,33 @@ class RailroadInkIterator(TreeIterator):
                     yield RailroadInkIterator(self.board.replace(i, j, tile))
 
 
-img_empty = np.ones((100, 100), np.uint8) * 255
-img_empty_tile = np.array(
-    PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "empty tile.png")
-)
-img_open = np.array(
-    PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "open.png")
-)
-
-
 class VideoObserver(Observer):
     def __init__(self):
         self.steps = 0
+
+        self.img_empty = np.ones((100, 100), np.uint8) * 255
+        self.img_empty_tile = np.array(
+            PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "empty tile.png")
+        )
+        self.img_open = np.array(
+            PIL.Image.open(pathlib.Path(__file__).parent / "tiles" / "open.png")
+        )
 
     def observe(self, state: TreeIterator) -> None:
         assert isinstance(state, RailroadInkIterator)
 
         board_size = state.board.board_size
-        img_board = np.zeros((board_size * 100, board_size * 100), np.uint8)
-
         open_positions = set(state.board.get_open_positions())
+        img_board = np.zeros((board_size * 100, board_size * 100), np.uint8)
         for i in range(board_size):
             for j in range(board_size):
                 if state.board.board[i][j] is None:
                     if i == 0 or j == 0 or i == board_size - 1 or j == board_size - 1:
-                        img = img_empty
+                        img = self.img_empty
                     elif (i, j) in open_positions:
-                        img = img_open
+                        img = self.img_open
                     else:
-                        img = img_empty_tile
+                        img = self.img_empty_tile
                 else:
                     img = state.board.board[i][j].image
                 img_board[i * 100 : (i + 1) * 100, j * 100 : (j + 1) * 100] = img
