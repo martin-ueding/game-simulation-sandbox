@@ -1,0 +1,10 @@
+@startmindmap
+* Root
+** Algorithms
+*** Breadth-First
+*** Depth-First
+**** Backtracking
+**** Beam Search
+*** Other
+**** Monte Carlo Tree Search
+@endmindmap

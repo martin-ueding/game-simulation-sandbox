@@ -1,0 +1,43 @@
+@startuml
+
+
+interface TreeIterator {
+    children() -> LIst[TreeIterator]
+}
+class RailroadInkIterator implements TreeIterator
+class NidavellirIterator implements TreeIterator
+class ScytheIterator implements TreeIterator
+class TicTacToeIterator implements TreeIterator
+
+interface ValueFunction {
+    evaluate(TreeIterator) -> float
+}
+TreeIterator <-- ValueFunction
+
+interface BinaryValueFunction {
+    evaluate(TreeIterator) -> bool
+}
+TreeIterator <-- BinaryValueFunction
+
+interface Observer {
+    observe(TreeIterator) -> None
+}
+TreeIterator <-- Observer
+class RailroadInkVideoObserver implements Observer
+
+interface Collector {
+    collect(List[TreeIterator]) -> None
+}
+TreeIterator <-- Collector
+class NidavellirPathCollector implements Collector
+
+interface TreeSearch {
+    run(TreeIterator) -> None
+}
+TreeIterator <-- TreeSearch
+class BeamSearch implements TreeSearch
+class Backtracking implements TreeSearch
+class MonteCarloTreeSearch implements TreeSearch
+class RandomWalk implements TreeSearch
+
+@enduml

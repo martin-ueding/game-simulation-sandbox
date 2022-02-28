@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="28.431986mm"
+   height="28.431986mm"
+   viewBox="0 0 28.431986 28.431986"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="open.svg"
+   inkscape:export-filename="/home/mu/Projekte/game-simulation-sandbox/game_simulation_sandbox/railroadink/tiles/overpass.png"
+   inkscape:export-xdpi="89.335999"
+   inkscape:export-ydpi="89.335999"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="6.4907799"
+     inkscape:cx="42.984049"
+     inkscape:cy="59.083809"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:snap-global="false" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-83.323602,-101.77081)">
+    <rect
+       style="fill:#ffffff;stroke:none;stroke-width:0.499999;stroke-linecap:round;stroke-linejoin:round"
+       id="rect893"
+       width="29.75695"
+       height="29.75695"
+       x="82.752922"
+       y="101.24089" />
+    <rect
+       style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.5;stroke-dasharray:none"
+       id="rect31"
+       width="28.131987"
+       height="28.131987"
+       x="83.473602"
+       y="101.92081" />
+    <circle
+       style="fill:#808080;stroke:none;stroke-width:1.21717;stroke-linecap:round;stroke-linejoin:round"
+       id="path1337"
+       cx="97.539597"
+       cy="115.9868"
+       r="4.9119353" />
+  </g>
+</svg>
