@@ -23,6 +23,7 @@ from .tiles import exit_road_up
 from .tiles import FitType
 from .tiles import Tile
 from game_simulation_sandbox.treesearch.backtracking import Backtracking
+from game_simulation_sandbox.treesearch.random_walk import RandomWalk
 
 
 class Board:
@@ -135,7 +136,7 @@ class VideoObserver(Observer):
         pil_image.save(f"railroad/{self.steps:06d}.png", "PNG")
 
         self.steps += 1
-        if self.steps >= 100:
+        if self.steps >= 1000:
             raise RuntimeError()
 
 
@@ -144,8 +145,9 @@ def main():
     board = Board()
     iterator = RailroadInkIterator(board)
     observer = VideoObserver()
-    tree_search = Backtracking(observer)
-    tree_search.run(iterator)
+    tree_search = RandomWalk(observer)
+    while True:
+        tree_search.run(iterator)
 
 
 if __name__ == "__main__":
