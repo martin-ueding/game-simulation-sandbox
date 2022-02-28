@@ -1,24 +1,16 @@
 import anytree
 
+from ..treesearch.random_walk import RandomWalk
+from .game import PrintObserver
 from .game import TicTacToe
+from .game import TicTacToeIterator
 
 
 def main():
     g = TicTacToe()
-    tree = anytree.Node(g.to_string(), g=g)
-    leaves = [tree]
-    print(0, len(leaves))
-    for i in range(1, 11):
-        cur_leaves = leaves
-        leaves = []
-        for leaf in cur_leaves:
-            if not leaf.g.status():
-                moves = leaf.g.make_moves()
-                leaves += [
-                    anytree.Node(move.to_string(), g=move, parent=leaf)
-                    for move in moves
-                ]
-        print(i, len(leaves))
+    observer = PrintObserver()
+    tree_search = RandomWalk(observer)
+    tree_search.run(TicTacToeIterator(g))
 
 
 if __name__ == "__main__":

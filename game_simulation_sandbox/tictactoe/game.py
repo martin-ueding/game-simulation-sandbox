@@ -1,5 +1,9 @@
 import copy
+from typing import Generator
 from typing import List
+
+from ..treesearch.interface import Observer
+from ..treesearch.interface import TreeIterator
 
 
 class TicTacToe:
@@ -68,3 +72,21 @@ def normalize_state(state: List[str]) -> List[str]:
         permutations.append([permutation[old_idx] for old_idx in flip])
     permutations.sort()
     return permutations[0]
+
+
+class TicTacToeIterator(TreeIterator):
+    def __init__(self, state: TicTacToe):
+        self.state = state
+
+    def get_children(self) -> Generator["TicTacToeIterator", None, None]:
+        if self.state.status() != "":
+            return
+        for child in self.state.make_moves():
+            yield TicTacToeIterator(child)
+
+
+class PrintObserver(Observer):
+    def observe(self, it: TreeIterator) -> None:
+        assert isinstance(it, TicTacToeIterator)
+        print(it.state)
+        print(it.state.status())

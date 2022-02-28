@@ -26,6 +26,7 @@ gss-ontour = "game_simulation_sandbox.ontour.roadmap:main"
 gss-game-of-life = "game_simulation_sandbox.gameoflife.__main__:cli"
 gss-nidavellir-mcts = "game_simulation_sandbox.nidavellir.mcts:main"
 gss-railroadink = "game_simulation_sandbox.railroadink.board:main"
+gss-tictactoe = "game_simulation_sandbox.tictactoe.__main__:main"
 
 [tool.poetry.dependencies]
 python = "3.8.*"
