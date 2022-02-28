@@ -83,9 +83,6 @@ class RailroadInkIterator(TreeIterator):
     def __init__(self, board: Board):
         self.board = board
 
-    def is_terminal(self) -> bool:
-        raise NotImplementedError()
-
     def get_children(self) -> Generator["RailroadInkIterator", None, None]:
         board = self.board.board
         for i, j in self.board.get_open_positions():
