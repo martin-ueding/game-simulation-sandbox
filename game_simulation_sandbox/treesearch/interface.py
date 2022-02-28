@@ -1,4 +1,5 @@
 from typing import Generator
+from typing import List
 
 
 class TreeIterator:
@@ -13,4 +14,14 @@ class TreeSearch:
 
 class Observer:
     def observe(self, state: TreeIterator) -> None:
+        raise NotImplementedError()
+
+
+class TrajectoryCollector:
+    def collect(self, trajectory: List[TreeIterator]) -> None:
+        raise NotImplementedError()
+
+
+class BinaryValueFunction:
+    def is_success(self, state: TreeIterator) -> bool:
         raise NotImplementedError()

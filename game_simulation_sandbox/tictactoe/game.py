@@ -2,7 +2,9 @@ import copy
 from typing import Generator
 from typing import List
 
+from ..treesearch.interface import BinaryValueFunction
 from ..treesearch.interface import Observer
+from ..treesearch.interface import TrajectoryCollector
 from ..treesearch.interface import TreeIterator
 
 
@@ -90,3 +92,17 @@ class PrintObserver(Observer):
         assert isinstance(it, TicTacToeIterator)
         print(it.state)
         print(it.state.status())
+
+
+class PrintTrajectoryCollector(TrajectoryCollector):
+    def collect(self, trajectory: List[TreeIterator]) -> None:
+        for it in trajectory:
+            assert isinstance(it, TicTacToeIterator)
+            print(it.state)
+            print()
+
+
+class TicTacToeWin(BinaryValueFunction):
+    def is_success(self, it: TreeIterator) -> bool:
+        assert isinstance(it, TicTacToeIterator)
+        return it.state.status() == "x"
