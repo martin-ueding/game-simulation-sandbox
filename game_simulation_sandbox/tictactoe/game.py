@@ -6,6 +6,8 @@ from ..treesearch.interface import BinaryValueFunction
 from ..treesearch.interface import Observer
 from ..treesearch.interface import TrajectoryCollector
 from ..treesearch.interface import TreeIterator
+from ..treesearch.interface import WinLossDraw
+from ..treesearch.interface import WinLossDrawValue
 
 
 class TicTacToe:
@@ -102,7 +104,13 @@ class PrintTrajectoryCollector(TrajectoryCollector):
             print()
 
 
-class TicTacToeWin(BinaryValueFunction):
-    def is_success(self, it: TreeIterator) -> bool:
+class TicTacToeValue(WinLossDrawValue):
+    def get_outcome(self, it: TreeIterator) -> WinLossDraw:
         assert isinstance(it, TicTacToeIterator)
-        return it.state.status() == "x"
+        status = it.state.status()
+        if status == "x":
+            return WinLossDraw.WIN
+        elif status == "o":
+            return WinLossDraw.LOSS
+        else:
+            return WinLossDraw.DRAW
