@@ -1,21 +1,19 @@
 import anytree.exporter
 
+from ..treesearch.mcts import MonteCarloTreeSearch
 from .game import PrintObserver
 from .game import PrintTrajectoryCollector
 from .game import TicTacToe
+from .game import TicTacToeBackpropagation
 from .game import TicTacToeIterator
-from .game import TicTacToeValue
-from game_simulation_sandbox.treesearch.mcts import AlternatingMonteCarloTreeSearch
 
 
 def main():
     g = TicTacToe()
     observer = PrintObserver()
-    WinLossDrawValue = TicTacToeValue()
+    backpropagation = TicTacToeBackpropagation()
     trajectory_collector = PrintTrajectoryCollector()
-    tree_search = AlternatingMonteCarloTreeSearch(
-        WinLossDrawValue, trajectory_collector, None
-    )
+    tree_search = MonteCarloTreeSearch(backpropagation, trajectory_collector, None)
     tree_search.run(TicTacToeIterator(g))
 
     dict_exporter = anytree.exporter.DictExporter(attriter=filter_attrs)

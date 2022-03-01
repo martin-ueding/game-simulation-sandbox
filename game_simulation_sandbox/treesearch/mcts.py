@@ -1,6 +1,7 @@
 import math
 import random
 from typing import Optional
+from typing import Union
 
 import anytree
 import numpy as np
@@ -9,18 +10,23 @@ from .interface import Observer
 from .interface import TrajectoryCollector
 from .interface import TreeIterator
 from .interface import TreeSearch
-from .interface import WinLossDraw
-from .interface import WinLossDrawValue
 
 
-class AlternatingMonteCarloTreeSearch(TreeSearch):
+class MCTSBackpropagation:
+    def get_win_score(
+        self, node: TreeIterator, start_players_turn: bool
+    ) -> Union[int, float]:
+        raise NotImplementedError
+
+
+class MonteCarloTreeSearch(TreeSearch):
     def __init__(
         self,
-        win_loss_draw_value: WinLossDrawValue,
+        backpropagation: MCTSBackpropagation,
         trajectory_collector: TrajectoryCollector,
         observer: Optional[Observer],
     ):
-        self.win_loss_draw_value = win_loss_draw_value
+        self.backpropagation = backpropagation
         self.trajectory_collector = trajectory_collector
         self.observer = observer
         self.tree: Optional[anytree.AnyNode] = None
@@ -69,15 +75,9 @@ class AlternatingMonteCarloTreeSearch(TreeSearch):
                     self.observer.observe(node.it)
 
             # Backpropagation phase.
-            result = self.win_loss_draw_value.get_outcome(node.it)
             for x in node.iter_path_reverse():
                 x.total += 1
-                if start_players_turn:
-                    if result == WinLossDraw.WIN:
-                        x.wins += 1
-                else:
-                    if result == WinLossDraw.LOSS:
-                        x.wins += 1
-                if result == WinLossDraw.DRAW:
-                    x.wins += 0.5
+                x.wins += self.backpropagation.get_win_score(
+                    node.it, start_players_turn
+                )
                 start_players_turn = not start_players_turn

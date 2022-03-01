@@ -1,13 +1,13 @@
 import copy
 from typing import Generator
 from typing import List
+from typing import Union
 
-from ..treesearch.interface import BinaryValueFunction
 from ..treesearch.interface import Observer
 from ..treesearch.interface import TrajectoryCollector
 from ..treesearch.interface import TreeIterator
 from ..treesearch.interface import WinLossDraw
-from ..treesearch.interface import WinLossDrawValue
+from ..treesearch.mcts import MCTSBackpropagation
 
 
 class TicTacToe:
@@ -104,13 +104,24 @@ class PrintTrajectoryCollector(TrajectoryCollector):
             print()
 
 
-class TicTacToeValue(WinLossDrawValue):
-    def get_outcome(self, it: TreeIterator) -> WinLossDraw:
+class TicTacToeBackpropagation(MCTSBackpropagation):
+    def get_win_score(
+        self, it: TreeIterator, start_players_turn: bool
+    ) -> Union[int, float]:
         assert isinstance(it, TicTacToeIterator)
         status = it.state.status()
         if status == "x":
-            return WinLossDraw.WIN
+            result = WinLossDraw.WIN
         elif status == "o":
-            return WinLossDraw.LOSS
+            result = WinLossDraw.LOSS
         else:
-            return WinLossDraw.DRAW
+            result = WinLossDraw.DRAW
+        if start_players_turn:
+            if result == WinLossDraw.WIN:
+                return 1
+        else:
+            if result == WinLossDraw.LOSS:
+                return 1
+        if result == WinLossDraw.DRAW:
+            return 0.5
+        return 0
